@@ -1,0 +1,21 @@
+{
+    "AppSettings": {
+        "ConnectionStrings": {
+            "DefaultConnectionString": "server=127.0.0.1; uid=status_website_user; pwd=c86addf8-849d-4603-ba63-baa5e1f2b5c9; database=status_website; SslMode=None"
+        },
+        "Users": {
+            "Administrators": {
+                "maxpower": "s",
+                "admin": "admin"
+            }
+        },
+        "StatusCodes": {
+            "Operational": "#27AE60",
+            "PlannedMaintenance": "#00AAF0",
+            "MinorDisruption": "#f4e542",
+            "ModerateDisruption": "#FFA837",
+            "SevereDisruption": "#C44031",
+            "SecurityBreach": "#000000"
+        }
+    }
+}
