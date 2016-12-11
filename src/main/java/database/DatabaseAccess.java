@@ -1,18 +1,23 @@
 package database;
 
-import core.Comment;
+import com.sun.syndication.io.FeedException;
+import database.databasemodels.Comment;
 import core.ErrorCodes;
-import core.Event;
+import database.databasemodels.Event;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rss.UpdateRssFeed;
 
 /**
  * This class contains all methods for accessing the database, most of these have
@@ -40,7 +45,7 @@ public class DatabaseAccess
 
             ZonedDateTime nowUTC = ZonedDateTime.now(ZoneOffset.UTC);
             addCommentStatement.setLong(5, nowUTC.toEpochSecond());
-
+            
             Timestamp timestamp = Timestamp.valueOf(nowUTC.toLocalDateTime());
             addCommentStatement.setTimestamp(6, timestamp);
 
@@ -93,7 +98,7 @@ public class DatabaseAccess
     public static boolean addEvent(Event anEvent)
     {
         log.trace("addEvent()");
-        String addEventSql = "INSERT INTO events (event_id, user_id, event_title, event_text, event_status, is_resolved, last_updated_unix, "
+        String addEventSql = "INSERT INTO events (event_id, user_id, event_title, event_text, event_status, is_active, last_updated_unix, "
                 + "last_updated_timestamp, start_time_unix, start_timestamp) "
                 + "VALUES (?,?,?,?,?,?,?,?,?,?)";
 
@@ -103,10 +108,10 @@ public class DatabaseAccess
         {
             addEventStatement.setString(1, anEvent.getEventId());
             addEventStatement.setString(2, anEvent.getUserId());
-            addEventStatement.setString(3, anEvent.getTitle());
+            addEventStatement.setString(3, anEvent.getEventTitle());
             addEventStatement.setString(4, anEvent.getEventText());
-            addEventStatement.setString(5, anEvent.getStatus());
-            addEventStatement.setBoolean(6, anEvent.isResolved());
+            addEventStatement.setString(5, anEvent.getEventStatus());
+            addEventStatement.setBoolean(6, anEvent.isActive());
 
             ZonedDateTime nowUTC = ZonedDateTime.now(ZoneOffset.UTC);
             Timestamp timestamp = Timestamp.valueOf(nowUTC.toLocalDateTime());
@@ -122,6 +127,7 @@ public class DatabaseAccess
         {
             log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
         }
+        UpdateRssFeed.updateFeed();
         return queryResult != 0;
     }
 
@@ -189,13 +195,13 @@ public class DatabaseAccess
     public static boolean setEventResolved(String eventId)
     {
         log.trace("setEventResolved()");
-        String setEventResolvedSql = "UPDATE events SET is_resolved=?, resolved_time_unix=?, resolved_timestamp=? WHERE event_id = ?";
+        String setEventResolvedSql = "UPDATE events SET is_active=?, resolved_time_unix=?, resolved_timestamp=? WHERE event_id = ?";
 
         int queryResult = 0;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement setEventResolvedStatement = databaseConnection.prepareStatement(setEventResolvedSql);)
         {
-            setEventResolvedStatement.setBoolean(1, true);
+            setEventResolvedStatement.setBoolean(1, false);
 
             ZonedDateTime nowUTC = ZonedDateTime.now(ZoneOffset.UTC);
             setEventResolvedStatement.setLong(2, nowUTC.toEpochSecond());
@@ -211,24 +217,25 @@ public class DatabaseAccess
         {
             log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
         }
+        UpdateRssFeed.updateFeed();
         return queryResult != 0;
     }
 
-    public static boolean setEventUnResolved(String eventId)
+    public static boolean setEventActive(String eventId)
     {
-        log.trace("setEventUnResolved()");
-        String setEventUnResolvedSql = "UPDATE events SET is_resolved=?, resolved_time_unix=?, resolved_timestamp=? WHERE event_id = ?";
+        log.trace("setEventActive()");
+        String setEventActiveSql = "UPDATE events SET is_active=?, resolved_time_unix=?, resolved_timestamp=? WHERE event_id = ?";
 
         int queryResult = 0;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                PreparedStatement setEventUnResolvedStatement = databaseConnection.prepareStatement(setEventUnResolvedSql);)
+                PreparedStatement setEventActiveStatement = databaseConnection.prepareStatement(setEventActiveSql);)
         {
-            setEventUnResolvedStatement.setBoolean(1, false);
-            setEventUnResolvedStatement.setNull(2, java.sql.Types.BIGINT);
-            setEventUnResolvedStatement.setNull(3, java.sql.Types.TIMESTAMP);
-            setEventUnResolvedStatement.setString(4, eventId);
+            setEventActiveStatement.setBoolean(1, false);
+            setEventActiveStatement.setNull(2, java.sql.Types.BIGINT);
+            setEventActiveStatement.setNull(3, java.sql.Types.TIMESTAMP);
+            setEventActiveStatement.setString(4, eventId);
 
-            queryResult = setEventUnResolvedStatement.executeUpdate();
+            queryResult = setEventActiveStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
@@ -248,9 +255,9 @@ public class DatabaseAccess
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement updateEventStatement = databaseConnection.prepareStatement(updateEventSql);)
         {
-            updateEventStatement.setString(1, anEvent.getTitle());
+            updateEventStatement.setString(1, anEvent.getEventTitle());
             updateEventStatement.setString(2, anEvent.getEventText());
-            updateEventStatement.setString(3, anEvent.getStatus());
+            updateEventStatement.setString(3, anEvent.getEventStatus());
             updateEventStatement.setLong(4, anEvent.getLastUpdatedUnix());
             updateEventStatement.setTimestamp(5, Timestamp.valueOf(anEvent.getLastUpdatedTimestamp()));
             updateEventStatement.setString(6, anEvent.getEventId());
@@ -329,46 +336,47 @@ public class DatabaseAccess
         return resultSetList;
     }
 
-    public static Event getEvent(String eventId)
-    {
-        log.trace("getEvent()");
-        String getEventSql = "SELECT * FROM events WHERE event_id = ?";
-
-        Event anEvent = null;
-        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                PreparedStatement getEventStatement = databaseConnection.prepareStatement(getEventSql);)
-        {
-            getEventStatement.setString(1, eventId);
-            try (ResultSet resultSet = getEventStatement.executeQuery())
-            {
-                if (resultSet.next())
-                {
-                    anEvent = DatabaseHelpers.convertResultSetToEvent(resultSet);
-                }
-            }
-
-        } catch (SQLException ex)
-        {
-            log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
-        }
-        return anEvent;
-    }
+//    public static List<Event> getEvent(String eventId)
+//    {
+//        log.trace("getEvent()");
+//        String getEventSql = "SELECT * FROM events WHERE event_id = ?";
+//
+//        List<Event> eventList = null;
+//        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//                PreparedStatement getEventStatement = databaseConnection.prepareStatement(getEventSql);)
+//        {
+//            getEventStatement.setString(1, eventId);
+//            try (ResultSet resultSet = getEventStatement.executeQuery())
+//            {
+//                if (resultSet.next())
+//                {
+//                    eventList = DatabaseHelpers.convertResultSetToEvent(resultSet);
+//                }
+//            }
+//
+//        } catch (SQLException ex)
+//        {
+//            log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
+//        }
+//        return eventList;
+//    }
+    
     
     /**
      * Gets all events which are not yet resolved.
      * @return a List of unsresolved events
      */
-    public static List getCurrentEvents()
+    public static List getActiveEvents()
     {
-        log.trace("getCurrentEvents()");
-        String getCurrentEventsSql = "SELECT * FROM events WHERE is_resolved = ?";
+        log.trace("getActiveEvents()");
+        String getActiveEventsSql = "SELECT * FROM events WHERE is_active = ?";
 
         List resultSetList = null;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-                PreparedStatement getCurrentEventsStatement = databaseConnection.prepareStatement(getCurrentEventsSql);)
+                PreparedStatement getActiveEventsStatement = databaseConnection.prepareStatement(getActiveEventsSql);)
         {
-            getCurrentEventsStatement.setBoolean(1, false);
-            try (ResultSet resultSet = getCurrentEventsStatement.executeQuery())
+            getActiveEventsStatement.setBoolean(1, true);
+            try (ResultSet resultSet = getActiveEventsStatement.executeQuery())
             {
                 if (resultSet.next())
                 {
@@ -383,16 +391,24 @@ public class DatabaseAccess
         return resultSetList;
     }
 
-    public static List getResolvedEvents()
+    public static List getResolvedEvents(long fromDate, long toDate)
     {
         log.trace("getResolvedEvents()");
-        String getResolvedEventsSql = "SELECT * FROM events WHERE is_resolved = ?";
+        //select all events 
+        //where is_active is false
+        //AND where resolvedTimeUnix is less than the fromDate 
+        //AND where resolvedTimeUnix is greater than the toDate
+        String getResolvedEventsSql = "SELECT * FROM events WHERE is_active = ? AND resolved_time_unix <=? AND resolved_time_unix >=?";
 
         List resultSetList = null;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getResolvedEventsStatement = databaseConnection.prepareStatement(getResolvedEventsSql);)
         {
-            getResolvedEventsStatement.setBoolean(1, true);
+            getResolvedEventsStatement.setBoolean(1, false);
+            
+            getResolvedEventsStatement.setLong(2, fromDate);          
+            getResolvedEventsStatement.setLong(3, toDate);
+          
             try (ResultSet resultSet = getResolvedEventsStatement.executeQuery())
             {
                 if (resultSet.next())
@@ -447,6 +463,35 @@ public class DatabaseAccess
                 if (resultSet.next())
                 {
                     resultSetList = DatabaseHelpers.convertResultSetToList(resultSet);
+                }
+            }
+
+        } catch (SQLException ex)
+        {
+            log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
+        }
+        return resultSetList;
+    }
+    
+    /**
+     * Gets all events which are not yet resolved.
+     * @return a List of unsresolved events
+     */
+    public static List<Event> getActiveEventsForRss()
+    {
+        log.trace("getActiveEventsForRss()");
+        String getActiveEventsSql = "SELECT * FROM events WHERE is_active = ?";
+
+        List resultSetList = null;
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getActiveEventsStatement = databaseConnection.prepareStatement(getActiveEventsSql);)
+        {
+            getActiveEventsStatement.setBoolean(1, true);
+            try (ResultSet resultSet = getActiveEventsStatement.executeQuery())
+            {
+                if (resultSet.next())
+                {
+                    resultSetList = DatabaseHelpers.convertResultSetToEvent(resultSet);
                 }
             }
 

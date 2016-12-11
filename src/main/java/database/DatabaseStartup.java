@@ -27,7 +27,8 @@ public class DatabaseStartup implements ServletContextListener
 
         DatabaseUtils.loadDatabaseDriver();
         DatabaseUtils.setupDatasource();
-
+        
+        //PopulateDatabase.populateDatabase();
     }
 
     @Override

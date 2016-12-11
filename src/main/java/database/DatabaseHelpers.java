@@ -1,6 +1,6 @@
 package database;
 
-import core.Event;
+import database.databasemodels.Event;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -14,8 +14,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class contains various helper methods for the database. For example
- * formatting the output of a resultset into a Java object of some type, or converting
- * the database's column names underscore_case into camelCase.
+ * formatting the output of a resultset into a Java object of some type, or
+ * converting the database's column names underscore_case into camelCase.
+ *
  * @author max
  */
 public class DatabaseHelpers
@@ -40,8 +41,14 @@ public class DatabaseHelpers
             while (currentColumn <= columnCount)
             {
                 String columnName = resultSetMetaData.getColumnName(currentColumn);
-                columnName = convertUnderscoreToCamelCase(columnName);
                 String columnValue = aResultSet.getString(currentColumn);
+
+                if (isBoolean(columnName))
+                {
+                    columnValue = getBooleanString(columnValue);
+                }
+
+                columnName = convertUnderscoreToCamelCase(columnName);
                 currentRecord.put(columnName, columnValue);
                 currentColumn++;
             }
@@ -49,6 +56,33 @@ public class DatabaseHelpers
         }
         log.debug(mainList.toString());
         return mainList;
+    }
+
+    /**
+     * Checks if this is a column in the database dealing with boolean values.
+     *
+     * @param columnName
+     * @return
+     */
+    private static boolean isBoolean(String columnName)
+    {
+        return columnName.equals("is_active");
+    }
+
+    /**
+     * Returns a string as this will all be marshalled to json anyway and
+     * everything is stored as a string due to this fact.
+     *
+     * @param columnValue
+     * @return
+     */
+    private static String getBooleanString(String columnValue)
+    {
+        if (columnValue.equals("1"))
+        {
+            return "true";
+        }
+        return "false";
     }
 
     protected static String convertUnderscoreToCamelCase(String input)
@@ -79,24 +113,132 @@ public class DatabaseHelpers
     }
 
     /**
-     * This method turns a resultset object with a single row into an Event object.
-     * Is it hard coded with the current database column names so any changes there will
-     * break this method.
+     * This method turns a resultset object with a single row into an Event
+     * object. Is it hard coded with the current database column names so any
+     * changes there will break this method.
+     *
      * @param aResultSet
      * @return an Event object with the values of the resultset
-     * @throws SQLException 
+     * @throws SQLException
      */
-    protected static Event convertResultSetToEvent(ResultSet aResultSet) throws SQLException
+//    protected static Event convertResultSetToEvent(ResultSet aResultSet) throws SQLException
+//    {
+//        log.trace("convertResultSetToEvent()");
+//        log.debug(aResultSet.toString());
+//        ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
+//        Event anEvent = null;
+//        int columnCount = resultSetMetaData.getColumnCount();
+//        if (aResultSet.next())
+//        {
+//            anEvent = new Event();
+//            int currentColumn = 1;
+//            while (currentColumn <= columnCount)
+//            {
+//                String columnName = resultSetMetaData.getColumnName(currentColumn);
+//
+//                switch (columnName)
+//                {
+//                    case "event_id":
+//                    {
+//                        String columnValue = aResultSet.getString(currentColumn);
+//                        anEvent.setEventId(columnValue);
+//                        break;
+//                    }
+//                    case "event_text":
+//                    {
+//                        String columnValue = aResultSet.getString(currentColumn);
+//                        anEvent.setEventText(columnValue);
+//                        break;
+//                    }
+//                    case "start_time_unix":
+//                    {
+//                        Long columnValue = aResultSet.getLong(currentColumn);
+//                        anEvent.setStartTimeUnix(columnValue);
+//                        break;
+//                    }
+//                    case "start_timestamp":
+//                    {
+//                        Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
+//                        anEvent.setStartTimestamp(columnValue.toLocalDateTime());
+//                        break;
+//                    }
+//                    case "event_status":
+//                    {
+//                        String columnValue = aResultSet.getString(currentColumn);
+//                        anEvent.setEventStatus(columnValue);
+//                        break;
+//                    }
+//                    case "last_updated_unix":
+//                    {
+//                        Long columnValue = aResultSet.getLong(currentColumn);
+//                        anEvent.setLastUpdatedUnix(columnValue);
+//                        break;
+//                    }
+//                    case "last_updated_timestamp":
+//                    {
+//                        Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
+//                        anEvent.setLastUpdatedTimestamp(columnValue.toLocalDateTime());
+//                        break;
+//                    }
+//                    case "is_active":
+//                    {
+//                        int columnValue = aResultSet.getInt(currentColumn);
+//                        boolean booleanValue = false; //mysql dosent support boolean, true is 1 and 0 is false
+//                        if (columnValue == 1)
+//                        {
+//                            booleanValue = true;
+//                        }
+//                        anEvent.setIsActive(booleanValue);
+//                        break;
+//                    }
+//                    case "resolved_time_unix":
+//                    {
+//                        Long columnValue = aResultSet.getLong(currentColumn);
+//                        anEvent.setResolvedTimeUnix(columnValue);
+//                        break;
+//                    }
+//                    case "resolved_timestamp":
+//                    {
+//                        Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
+//                        anEvent.setResolvedTimestamp(columnValue.toLocalDateTime());
+//                        break;
+//                    }
+//                    case "user_id":
+//                    {
+//                        String columnValue = aResultSet.getString(currentColumn);
+//                        anEvent.setUserId(columnValue);
+//                        break;
+//                    }
+//                    default:
+//                        break;
+//                }
+//            }
+//            currentColumn++;
+//        }
+//        return anEvent;
+//    }
+
+    /**
+     * This method turns a resultset object into a List<Event>
+     * object, each Event in the list represents a single row in the resultset.
+     *
+     * @param aResultSet
+     * @return a populated List<Event> object
+     * @throws SQLException
+     */
+    protected static List<Event> convertResultSetToEvent(ResultSet aResultSet) throws SQLException
     {
         log.trace("convertResultSetToEvent()");
         log.debug(aResultSet.toString());
+
         ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
-        Event anEvent = null;
+        List eventList = new ArrayList<>();
         int columnCount = resultSetMetaData.getColumnCount();
-        if (aResultSet.next())
+        while (aResultSet.next())
         {
-            anEvent = new Event();
             int currentColumn = 1;
+            Event currentEvent = new Event();
+
             while (currentColumn <= columnCount)
             {
                 String columnName = resultSetMetaData.getColumnName(currentColumn);
@@ -104,78 +246,94 @@ public class DatabaseHelpers
                 switch (columnName)
                 {
                     case "event_id":
-                        {
-                            String columnValue = aResultSet.getString(currentColumn);
-                            anEvent.setEventId(columnValue);
-                            break;
-                        }
+                    {
+                        String columnValue = aResultSet.getString(currentColumn);
+                        currentEvent.setEventId(columnValue);
+                        break;
+                    }
+                    case "event_title":
+                    {
+                        String columnValue = aResultSet.getString(currentColumn);
+                        currentEvent.setEventTitle(columnValue);
+                        break;
+                    }
                     case "event_text":
-                        {
-                            String columnValue = aResultSet.getString(currentColumn);
-                            anEvent.setEventText(columnValue);
-                            break;
-                        }
+                    {
+                        String columnValue = aResultSet.getString(currentColumn);
+                        currentEvent.setEventText(columnValue);
+                        break;
+                    }
                     case "start_time_unix":
-                        {
-                            Long columnValue = aResultSet.getLong(currentColumn);
-                            anEvent.setStartTimeUnix(columnValue);
-                            break;
-                        }
+                    {
+                        Long columnValue = aResultSet.getLong(currentColumn);
+                        currentEvent.setStartTimeUnix(columnValue);
+                        break;
+                    }
                     case "start_timestamp":
-                        {
-                            Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
-                            anEvent.setStartTimestamp(columnValue.toLocalDateTime());
-                            break;
-                        }
+                    {
+                        Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
+                        currentEvent.setStartTimestamp(columnValue.toLocalDateTime());
+                        break;
+                    }
                     case "event_status":
-                        {
-                            String columnValue = aResultSet.getString(currentColumn);
-                            anEvent.setStatus(columnValue);
-                            break;
-                        }
+                    {
+                        String columnValue = aResultSet.getString(currentColumn);
+                        currentEvent.setEventStatus(columnValue);
+                        break;
+                    }
                     case "last_updated_unix":
-                        {
-                            Long columnValue = aResultSet.getLong(currentColumn);
-                            anEvent.setLastUpdatedUnix(columnValue);
-                            break;
-                        }
+                    {
+                        Long columnValue = aResultSet.getLong(currentColumn);
+                        currentEvent.setLastUpdatedUnix(columnValue);
+                        break;
+                    }
                     case "last_updated_timestamp":
+                    {
+                        Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
+                        currentEvent.setLastUpdatedTimestamp(columnValue.toLocalDateTime());
+                        break;
+                    }
+                    case "is_active":
+                    {
+                        int columnValue = aResultSet.getInt(currentColumn);
+                        boolean booleanValue = false; //mysql dosent support boolean, true is 1 and 0 is false
+                        if (columnValue == 1)
                         {
-                            Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
-                            anEvent.setLastUpdatedTimestamp(columnValue.toLocalDateTime());
-                            break;
+                            booleanValue = true;
                         }
-                    case "is_resolved":
-                        {
-                            boolean columnValue = aResultSet.getBoolean(currentColumn);
-                            anEvent.setResolved(columnValue);
-                            break;
-                        }
+                        currentEvent.setIsActive(booleanValue);
+                        break;
+                    }
                     case "resolved_time_unix":
-                        {
-                            Long columnValue = aResultSet.getLong(currentColumn);
-                            anEvent.setResolvedTimeUnix(columnValue);
-                            break;
-                        }
+                    {
+                        Long columnValue = aResultSet.getLong(currentColumn);
+                        currentEvent.setResolvedTimeUnix(columnValue);
+                        break;
+                    }
                     case "resolved_timestamp":
+                    {
+                        Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
+                        if(columnValue != null)
                         {
-                            Timestamp columnValue = aResultSet.getTimestamp(currentColumn);
-                            anEvent.setResolvedTimestamp(columnValue.toLocalDateTime());
-                            break;
+                            currentEvent.setResolvedTimestamp(columnValue.toLocalDateTime());
                         }
+                        break;
+                    }
                     case "user_id":
-                        {
-                            String columnValue = aResultSet.getString(currentColumn);
-                            anEvent.setUserId(columnValue);
-                            break;
-                        }
+                    {
+                        String columnValue = aResultSet.getString(currentColumn);
+                        currentEvent.setUserId(columnValue);
+                        break;
+                    }
                     default:
                         break;
                 }
+                currentColumn++;
             }
-            currentColumn++;
+            eventList.add(currentEvent);
         }
-        return anEvent;
+        log.debug(eventList.toString());
+        return eventList;
     }
 
 }

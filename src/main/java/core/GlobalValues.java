@@ -27,11 +27,13 @@ public class GlobalValues
     private static final String LOGIN_PAGE_URL = "/login.html";
     private static final String ADMIN_PAGE_URL = "/admin.html";
     private static final String ERROR_PAGE_URL = "/error.html";
-    private static final String CURRENT_EVENTS_PAGE_URL = "/currentEvents.html";
+    private static final String ACTIVE_EVENTS_PAGE_URL = "/activeEvents.html";
     private static final String RESOLVED_EVENTS_PAGE_URL = "/resolvedEvents.html";
 
-    //home page request, this is where the user is redirected to when attempting to access unauthorized resources
-    private static final Request HOME_PAGE_REQUEST = Request.getcurrenteventspage;
+    //login page request, this is where the user is redirected to when attempting to access unauthorized resources
+    private static final Request LOGIN_PAGE_REQUEST = Request.getloginpage;
+    private static final Request ACTIVE_EVENTS_PAGE = Request.getactiveeventspage;
+    private static final Request RSS_REQUEST = Request.rss;
        
     //misc values
     private static final int SESSION_TIMEOUT_VALUE = 3600; //0 or less will never timeout, this value is in seconds   
@@ -54,6 +56,16 @@ public class GlobalValues
         "admin.html"
     };
 
+    public static Request getACTIVE_EVENTS_PAGE()
+    {
+        return ACTIVE_EVENTS_PAGE;
+    } 
+
+    public static Request getRSS_REQUEST()
+    {
+        return RSS_REQUEST;
+    }
+    
     public static String getERROR_PAGE_URL()
     {
         return ERROR_PAGE_URL;
@@ -63,8 +75,8 @@ public class GlobalValues
         return USERS;
     }
 
-    public static Request getHOME_PAGE_REQUEST() {
-        return HOME_PAGE_REQUEST;
+    public static Request getLOGIN_PAGE_REQUEST() {
+        return LOGIN_PAGE_REQUEST;
     }
 
     public static int getSESSION_TIMEOUT_VALUE() {
@@ -83,8 +95,8 @@ public class GlobalValues
         return ADMIN_PAGE_URL;
     }
 
-    public static String getCURRENT_EVENTS_PAGE_URL() {
-        return CURRENT_EVENTS_PAGE_URL;
+    public static String getACTIVE_EVENTS_PAGE_URL() {
+        return ACTIVE_EVENTS_PAGE_URL;
     }
 
     public static String getRESOLVED_EVENTS_PAGE_URL() {

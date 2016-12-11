@@ -18,13 +18,14 @@ public enum Request
     updatecomment,
     deletecomment,
     getadminpage,
-    getcurrenteventspage,
+    getactiveeventspage,
     getloginpage,
     getresolvedeventspage,
     getallcomments,
     getallevents,
-    getcurrentevents,
+    getactiveevents,
     geteventcomments,
     getresolvedevents,
-    getserverapi
+    getserverapi,
+    rss
 }

@@ -1,0 +1,29 @@
+.operational
+{
+    color: #27AE60;
+}
+.plannedMaintenance
+{
+    color: #00AAF0;
+}
+.minorDisruption
+{
+    color: #f4e542;
+}
+.moderateDisruption
+{
+    color: #FFA837;
+}
+.severeDisruption
+{
+    color: #C44031;
+}
+.securityBreach
+{
+    color: #000000;
+}
+
+.spacer
+{
+    margin-top: 10px;
+}

@@ -1,5 +1,7 @@
 jQuery(document).ready(function () {
-    
+
+    global.ajaxFunctions.getServerApi();
+
     jQuery("#logoutButton").on("click", function () {
         admin.logout();
         return false;

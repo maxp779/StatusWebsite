@@ -1,26 +1,11 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 jQuery(document).ready(function () {
 
-    jQuery('#loginForm').submit(function () {
-        login.loginRequest();
-        return false;
+    global.ajaxFunctions.getServerApi(function () {
+        global.commonFunctions.setupNavBar();
     });
 
-    jQuery("#loginForm :input").change(function () {
-        document.getElementById("feedback").innerHTML = "";
-    });
-
-    //auto selects form input text when clicked
-    jQuery(document).on('click', 'input', function () {
-        this.select();
-    });
-    
     login.autologin();
+    login.setupEvents();
 });
 
 
@@ -32,7 +17,23 @@ var login = function () {
         document.getElementById("username").value = "maxpower";
         document.getElementById("password").value = "123";
     }
-    
+
+    function setupEvents()
+    {
+        jQuery('#loginForm').submit(function () {
+            login.loginRequest();
+            return false;
+        });
+
+        jQuery("#loginForm :input").change(function () {
+            document.getElementById("feedback").innerHTML = "";
+        });
+
+        //auto selects form input text when clicked
+        jQuery(document).on('click', 'input', function () {
+            this.select();
+        });
+    }
 
     function loginRequest()
     {
@@ -66,6 +67,7 @@ var login = function () {
     }
     return{
         loginRequest: loginRequest,
-        autologin: autologin
+        autologin: autologin,
+        setupEvents:setupEvents
     };
 }();

@@ -1,5 +1,6 @@
 package core;
 
+import session.SessionManager;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -75,7 +76,7 @@ public class AuthorizationFilter implements Filter
                 chain.doFilter(request, response);
             } else//if invalid session, back to login page
             {
-                aResponse.sendRedirect(sc.getContextPath() + "/" + GlobalValues.getHOME_PAGE_REQUEST());
+                aResponse.sendRedirect(sc.getContextPath() + "/" + GlobalValues.getLOGIN_PAGE_REQUEST());
             }
         } else //request dosent need auth so can be ignored
         {
