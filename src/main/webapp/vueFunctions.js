@@ -3,6 +3,8 @@ var vueFunctions = function () {
     function loadEventComponents(callback)
     {
         // create an instance
+        var event = {};
+        
         var event = new vueComponents.Event({
             replace: false,
             data: {
@@ -16,6 +18,7 @@ var vueFunctions = function () {
         var eventComments = new vueComponents.EventComments({
             replace: false,
             data: {
+                event: global.globalValues.currentEvent,
                 eventComments: global.globalValues.currentEventCommentsArray,
                 eventStatusCodes: vueComponents.eventStatusCodes
             }

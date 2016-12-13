@@ -64,7 +64,7 @@ var admin = function () {
             });
         }
 
-        function deleteEvent(eventId, callback)
+        function deleteEvent(eventId, isResolvedEvent, callback)
         {
             var toServer = {};
             toServer.eventId = eventId;
@@ -78,7 +78,13 @@ var admin = function () {
                 {
                     if (returnObject.success === true)
                     {
-                        global.ajaxFunctions.getUnresolvedEvents();
+                        if (isResolvedEvent)
+                        {
+                            getAdminResolvedEventsList();
+                        } else
+                        {
+                            global.ajaxFunctions.getUnresolvedEvents();
+                        }
                     } else
                     {
                         //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-info\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
@@ -183,7 +189,7 @@ var admin = function () {
                 }
             });
         }
-        
+
         function setEventToUnresolved(eventId, callback)
         {
             var toServer = {};
@@ -223,7 +229,7 @@ var admin = function () {
             getAdminResolvedEventsList: getAdminResolvedEventsList,
             createNewEvent: createNewEvent,
             setEventToResolved: setEventToResolved,
-            setEventToUnresolved:setEventToUnresolved
+            setEventToUnresolved: setEventToUnresolved
         };
 
     }();
@@ -243,10 +249,16 @@ var admin = function () {
                 ajaxFunctions.logout();
             });
 
-            jQuery(document).on("click", ".deleteEventButton", function () {
+            jQuery(document).on("click", ".deleteResolvedEventButton", function () {
                 var clickedElement = this;
                 var eventId = clickedElement.dataset.eventId;
-                ajaxFunctions.deleteEvent(eventId);
+                ajaxFunctions.deleteEvent(eventId, true);
+            });
+
+            jQuery(document).on("click", ".deleteUnresolvedEventButton", function () {
+                var clickedElement = this;
+                var eventId = clickedElement.dataset.eventId;
+                ajaxFunctions.deleteEvent(eventId, false);
             });
 
             jQuery(document).on("click", ".setResolvedButton", function () {
@@ -254,13 +266,13 @@ var admin = function () {
                 var eventId = clickedElement.dataset.eventId;
                 ajaxFunctions.setEventToResolved(eventId);
             });
-            
+
             jQuery(document).on("click", ".setUnresolvedButton", function () {
                 var clickedElement = this;
                 var eventId = clickedElement.dataset.eventId;
                 ajaxFunctions.setEventToUnresolved(eventId);
             });
-            
+
             jQuery(document).on("click", ".eventLink", function () {
                 var clickedElement = this;
                 var eventId = clickedElement.dataset.eventId;
@@ -320,7 +332,7 @@ var admin = function () {
         jQuery("#datepicker1").on("dp.change", function (e) {
             jQuery('#datepicker2').data("DateTimePicker").maxDate(e.date);
         });
-        
+
         //one day in the future, this eliminates weirdness with now showing events
         //that were just resolved
         var date = new Date();
@@ -338,7 +350,7 @@ var admin = function () {
         jQuery('#createEventDatepicker').datetimepicker({
             viewMode: 'days'
         });
-        
+
         jQuery('#createEventDatepicker').data("DateTimePicker").defaultDate(new Date());
 
         jQuery('#createEventDatepicker').data("DateTimePicker").showTodayButton(true);

@@ -94,7 +94,7 @@ template: `<ul class="list-group spacer">
                     <p class="list-group-item-text">Start time: {{new Date(event.startTimeUnix*1000).toLocaleString()}}</p>
                     <p class="list-group-item-text">Last updated: {{new Date(event.lastUpdatedTimeUnix*1000).toLocaleString()}}</p>        
                     <button type="button" class="btn btn-default btn-xs pull-left setResolvedButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-ok" style="color:green"></span> Click to set as resolved</button>
-                    <button type="button" class="btn btn-default btn-xs pull-right deleteEventButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
+                    <button type="button" class="btn btn-default btn-xs pull-right deleteUnresolvedEventButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
                 </div>
             </div>
         </li>
@@ -121,7 +121,7 @@ template: `<ul class="list-group spacer">
                     <div v-html="eventStatusCodes[event.eventStatus]"></div> 
                     <p class="list-group-item-text">Time resolved: {{new Date(event.resolvedTimeUnix*1000).toLocaleString()}}</p>
                     <button type="button" class="btn btn-default btn-xs pull-left setUnresolvedButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-exclamation-sign" style="color:red"></span> Click to set as unresolved</button>
-                    <button type="button" class="btn btn-default btn-xs pull-right deleteEventButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
+                    <button type="button" class="btn btn-default btn-xs pull-right deleteResolvedEventButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
                 </div>
             </div>
         </li>
@@ -217,6 +217,7 @@ template: `<ul class="list-group spacer">
         var Event = Vue.extend({
         template: `<div class="row">
                 <div class="col-sm-12">
+            <div v-if="Object.keys(event).length != 0 && event.constructor === Object">
                 <h3>{{event.eventTitle}}</h3>    
                     <div v-html="eventStatusCodes[event.eventStatus]" class="spacer"></div> 
                     <p class="list-group-item-text spacer">Start time: {{new Date(event.startTimeUnix*1000).toLocaleString()}}</p>
@@ -228,10 +229,16 @@ template: `<ul class="list-group spacer">
                         <p class="list-group-item-text spacer">Resolved: No</p>
                     </div>
                     <p class="list-group-item-text spacer">Decription: {{event.eventText}}</p>
+            </div>
+            <div v-else>
+                <h3>Sorry this event appears to have been deleted</h3>    
+            </div>
                 </div>
 </div>`});
         var EventComments = Vue.extend({
-        template: ` <div class="row">
+        template: `             <div v-if="Object.keys(event).length != 0 && event.constructor === Object">
+
+<div class="row">
                 <div class="col-sm-12">        
     <h3>Comments:</h3>
     <div v-if="eventComments.length !== 0">
@@ -256,7 +263,8 @@ template: `<ul class="list-group spacer">
     </div>
 </ul>
  </div>
- </div>`});
+ </div>
+</div>`});
         //not a vue component
         var eventStatusCodes = {
         0: "<p class='list-group-item-text operational'>Status: Operational</p>",
@@ -278,4 +286,4 @@ template: `<ul class="list-group spacer">
                 EventComments:EventComments,
                 eventStatusCodes:eventStatusCodes
         };
-        }();
+}();
