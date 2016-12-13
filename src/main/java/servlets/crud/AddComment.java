@@ -1,12 +1,14 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
 import core.ErrorCodes;
-import database.databasemodels.Event;
-import core.ServletUtils;
-import core.StandardOutputObject;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
+import database.databasemodels.Comment;
+import core.UserObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,13 +21,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "SetEventUnresolved", urlPatterns =
+@WebServlet(name = "AddComment", urlPatterns =
 {
-    "/seteventunresolved"
+    "/addcomment"
 })
-public class SetEventUnresolved extends HttpServlet
+public class AddComment extends HttpServlet
 {
-   private static final Logger log = LoggerFactory.getLogger(SetEventUnresolved.class);
+    private static final Logger log = LoggerFactory.getLogger(AddComment.class);
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -40,21 +42,25 @@ public class SetEventUnresolved extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String eventJsonString = ServletUtils.getPostRequestJson(request);       
-        Event unresolvedEvent = ServletUtils.deserializeEventJson(eventJsonString);
-        
-        log.debug("doPost() event to be set to unresolved is:"+unresolvedEvent.toString());
-        boolean success = DatabaseAccess.setEventActive(unresolvedEvent.getEventId());
+        String commentJsonString = ServletUtils.getPostRequestJson(request);       
+        Comment newComment = ServletUtils.deserializeCommentJson(commentJsonString);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);        
+        newComment.setUserId(currentUser.getUsername());
+        newComment.setCommentId(UUID.randomUUID().toString());
+        log.debug("doPost() comment to be added:"+newComment.toString());
+
+        boolean success = DatabaseAccess.addComment(newComment);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        outputObject.setData(unresolvedEvent);
+        
+        outputObject.setData(newComment);
         if (success)
         {
-            log.info("event set to unresolved");
+            log.info("comment added successfully");
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCodes.SET_EVENT_UNRESOLVED_FAILED);
+            outputObject.setErrorCode(ErrorCodes.ADD_COMMENT_FAILED);
             writeOutput(response, outputObject);
         }
     }

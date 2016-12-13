@@ -5,33 +5,21 @@
  */
 package rss;
 
-import com.sun.syndication.feed.synd.SyndCategory;
-import com.sun.syndication.feed.synd.SyndCategoryImpl;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedOutput;
 import database.databasemodels.Event;
 import core.GlobalValues;
 import database.DatabaseAccess;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -57,13 +45,13 @@ public class UpdateRssFeed
         SyndContent description;
 
         //get active/scheduled events
-        List<Event> activeEvents = DatabaseAccess.getActiveEventsForRss();
+        List<Event> activeEvents = DatabaseAccess.getUnresolvedEventsForRss();
 
         for (Event currentEvent : activeEvents)
         {
             entry = new SyndEntryImpl();
             entry.setTitle(currentEvent.getEventTitle());
-            entry.setLink("http://localhost:8080/"+ GlobalValues.getACTIVE_EVENTS_PAGE());
+            entry.setLink("http://localhost:8080/"+ GlobalValues.getUNRESOLVED_EVENTS_PAGE());
             try
             {
                 LocalDateTime startTimestamp = currentEvent.getStartTimestamp();

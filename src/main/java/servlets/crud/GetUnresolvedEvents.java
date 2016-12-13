@@ -1,13 +1,10 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
 import core.ErrorCodes;
-import core.StandardOutputObject;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,17 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Deals with queries for resolved events between two dates
- * 
+ *
  * @author max
  */
-@WebServlet(name = "GetResolvedEvents", urlPatterns =
+@WebServlet(name = "GetUnresolvedEvents", urlPatterns =
 {
-    "/getresolvedevents"
+    "/getunresolvedevents"
 })
-public class GetResolvedEvents extends HttpServlet
+public class GetUnresolvedEvents extends HttpServlet
 {
-    private static final Logger log = LoggerFactory.getLogger(GetResolvedEvents.class);
+    private static final Logger log = LoggerFactory.getLogger(GetUnresolvedEvents.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -43,22 +39,19 @@ public class GetResolvedEvents extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        
-        Long fromDate = Long.parseLong(request.getParameter("from"));
-        Long toDate = Long.parseLong(request.getParameter("to"));              
-        List resolvedEvents = DatabaseAccess.getResolvedEvents(fromDate, toDate);
+        List unresolvedEvents = DatabaseAccess.getUnresolvedEvents();
         StandardOutputObject output = new StandardOutputObject();
-        
-        //even if resolvedEvents is null it means no events were found which is still success
-        output.setSuccess(true);
-        if (resolvedEvents != null)
+
+        if (unresolvedEvents != null)
         {
-            output.setData(resolvedEvents);
+            output.setSuccess(true);
+            output.setData(unresolvedEvents);
             writeOutput(response, output);
+
         } else
         {
-            output.setData(new ArrayList<>());
-            output.setErrorCode(ErrorCodes.GET_RESOLVED_EVENTS_FAILED);
+            output.setSuccess(false);
+            output.setErrorCode(ErrorCodes.GET_CURRENT_EVENTS_FAILED);
             writeOutput(response, output);
         }
     }

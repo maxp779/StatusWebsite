@@ -57,7 +57,8 @@ public class DatabaseUtils
         }
         return connection;
     }
-
+    
+    @Deprecated
     protected static void loadDatabaseDriver()
     {
         log.trace("loadDatabaseDriver()");
@@ -69,7 +70,7 @@ public class DatabaseUtils
             log.error("load database driver failed", ex);
         }
     }
-
+    
     protected static void dersgisterDatabaseDriver()
     {
         log.trace("dersgisterDatabaseDriver()");

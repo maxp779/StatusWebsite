@@ -7,13 +7,13 @@
         <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript" crossorigin="anonymous" ></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.4/vue.js"></script>  
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.4/vue.js"></script>        
         <script src="global.js" type="text/javascript"></script>
         <script src="vueComponents.js" type="text/javascript"></script>
         <script src="vueFunctions.js" type="text/javascript"></script>
-        <script src="resolvedEvents.js" type="text/javascript"></script>
+        <script src="adminEventPage.js" type="text/javascript"></script>
         <link href="css/events.css" rel="stylesheet">
-
+        
         <!--datepicker-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/js/bootstrap-datetimepicker.min.js"></script>
@@ -23,35 +23,54 @@
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-sm-6 col-sm-offset-4">
+                <div class="col-sm-6 col-sm-offset-3">
                     <h1>Server hosting</h1>
-                    <h3>Resolved events</h3>
-                </div>
-            </div>           
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <ul class="nav nav-pills">
-                                <li role="presentation"><a id="unresolvedEventsNav">Home</a></li>
-                                <li role="presentation" class="active"><a id="resolvedEventsNav">Resolved events</a></li>
-                                <li role="presentation"><a id="loginNav">Login</a></li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="panel panel-default">
                         <div class="panel-body">
-                            <div id="datepickers"></div>
-                             <div id="resolvedEventsList"></div>
+                            <div id="adminEvent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div id="adminEventComments"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div> <!--/container-->
+        
+        <!-- Modal -->
+        <div id="updateCommentModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Create new event</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateCommentForm">
+                            <div class="form-group">
+                                <label for="commentText">Comment</label>
+                                <textarea rows="8" cols="50" id="commentText" class="form-control" name="commentText" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary spacer">Submit edit</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
-

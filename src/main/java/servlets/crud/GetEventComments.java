@@ -1,12 +1,13 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
 import core.ErrorCodes;
-import core.ServerApi;
-import core.StandardOutputObject;
+import database.databasemodels.Event;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
+import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,14 +20,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetServerApi", urlPatterns =
+@WebServlet(name = "GetEventComments", urlPatterns =
 {
-    "/getserverapi"
+    "/geteventcomments"
 })
-public class GetServerApi extends HttpServlet
+public class GetEventComments extends HttpServlet
 {
-
-    private static final Logger log = LoggerFactory.getLogger(GetServerApi.class);
+    private static final Logger log = LoggerFactory.getLogger(GetEventComments.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -41,21 +41,29 @@ public class GetServerApi extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-
-        Map<String, Object> serverApiMap = new HashMap<>();
-        serverApiMap.put("requests", ServerApi.getREQUESTS_API_MAP_STRING());
-        serverApiMap.put("errorCodes", ServerApi.getERROR_CODES_MAP_STRING());
-
-        StandardOutputObject outputObject = new StandardOutputObject();
-        outputObject.setSuccess(true);
-        outputObject.setData(serverApiMap);
-        writeOutput(response, outputObject);
+        String eventId = request.getParameter("eventId");
+       
+        List eventComments = DatabaseAccess.getEventComments(eventId);
+        StandardOutputObject output = new StandardOutputObject();
+        
+        if (eventComments != null)
+        {
+            output.setSuccess(true);          
+            output.setData(eventComments);
+            writeOutput(response, output);
+            
+        } else
+        {
+            output.setSuccess(false);        
+            output.setErrorCode(ErrorCodes.NO_COMMENTS_FOUND);
+            writeOutput(response, output);
+        }
     }
-
-    private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
+    
+    private void writeOutput(HttpServletResponse response, StandardOutputObject output)
     {
         log.trace("writeOutput()");
-        String outputJSON = outputObject.getJSONString();
+        String outputJSON = output.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");
         try (PrintWriter out = response.getWriter())

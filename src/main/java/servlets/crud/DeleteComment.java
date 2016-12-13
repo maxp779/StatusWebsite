@@ -1,9 +1,9 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
+import database.databasemodels.Comment;
 import core.ErrorCodes;
-import database.databasemodels.Event;
-import core.ServletUtils;
-import core.StandardOutputObject;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "UpdateEventStatus", urlPatterns =
+@WebServlet(name = "DeleteComment", urlPatterns =
 {
-    "/updateevent"
+    "/deletecomment"
 })
-public class UpdateEvent extends HttpServlet
+public class DeleteComment extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(UpdateEvent.class);
+    private static final Logger log = LoggerFactory.getLogger(DeleteComment.class);
 
- /**
+/**
      * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
@@ -41,22 +41,22 @@ public class UpdateEvent extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String updatedEventJson = ServletUtils.getPostRequestJson(request);       
-        Event updatedEvent = ServletUtils.deserializeEventJson(updatedEventJson);
+        String commentIdJson = ServletUtils.getPostRequestJson(request);       
+        Comment commentToDelete = ServletUtils.deserializeCommentJson(commentIdJson);
         
-        log.debug("doPost() updated event is:"+updatedEvent.toString());
+        log.debug("doPost() comment to be deleted:"+commentToDelete.toString());
 
-        boolean success = DatabaseAccess.updateEvent(updatedEvent);
+        boolean success = DatabaseAccess.deleteComment(commentToDelete);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        outputObject.setData(updatedEvent);
+        outputObject.setData(commentToDelete);
         if (success)
         {
-            log.info("event updated successfully");
+            log.info("comment deleted successfully");
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCodes.UPDATE_EVENT_FAILED);
+            outputObject.setErrorCode(ErrorCodes.DELETE_COMMENT_FAILED);
             writeOutput(response, outputObject);
         }
     }

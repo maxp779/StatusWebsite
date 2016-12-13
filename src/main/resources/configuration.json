@@ -8,14 +8,6 @@
                 "maxpower": "s",
                 "admin": "admin"
             }
-        },
-        "StatusCodes": {
-            "Operational": "#27AE60",
-            "PlannedMaintenance": "#00AAF0",
-            "MinorDisruption": "#f4e542",
-            "ModerateDisruption": "#FFA837",
-            "SevereDisruption": "#C44031",
-            "SecurityBreach": "#000000"
         }
     }
 }

@@ -6,7 +6,6 @@ package core;
  */
 public enum Request
 {    
-    frontcontroller,
     login,
     logout,
     addevent,
@@ -18,14 +17,17 @@ public enum Request
     updatecomment,
     deletecomment,
     getadminpage,
-    getactiveeventspage,
+    getadmineventpage,
+    geteventpage,
+    getunresolvedeventspage,
     getloginpage,
     getresolvedeventspage,
     getallcomments,
-    getallevents,
-    getactiveevents,
-    geteventcomments,
+    getevents,
+    getsingleevent,
+    getunresolvedevents,
     getresolvedevents,
+    geteventcomments,
     getserverapi,
     rss
 }

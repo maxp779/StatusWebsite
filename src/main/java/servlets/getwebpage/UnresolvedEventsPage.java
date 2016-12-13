@@ -1,4 +1,9 @@
-package servlets.webpagecontrollers;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package servlets.getwebpage;
 
 import core.GlobalValues;
 import java.io.IOException;
@@ -12,16 +17,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This servlet determines whether to send the client to the mobile login page
+ * or the desktop login page, if they are already logged in it will send the
+ * client to the appropriate main page
  *
  * @author max
  */
-@WebServlet(name = "AdminPage", urlPatterns =
+@WebServlet(name = "UnresolvedEventsPage", urlPatterns =
 {
-    "/getadminpage"
+    "/getunresolvedeventspage"
 })
-public class AdminPage extends HttpServlet
+public class UnresolvedEventsPage extends HttpServlet
 {
-    private static final Logger log = LoggerFactory.getLogger(AdminPage.class);
+
+    private static final Logger log = LoggerFactory.getLogger(UnresolvedEventsPage.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -36,8 +45,8 @@ public class AdminPage extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath() + GlobalValues.getADMIN_PAGE_URL();
+        ServletContext sc = this.getServletContext();
+        String webPageURL = sc.getContextPath() + GlobalValues.getUNRESOLVED_EVENTS_PAGE_URL();
         response.sendRedirect(webPageURL);
     }
 

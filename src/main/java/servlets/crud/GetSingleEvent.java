@@ -1,11 +1,12 @@
-package session;
+package servlets.crud;
 
 import core.ErrorCodes;
-import core.GlobalValues;
+import database.databasemodels.Event;
 import servlets.crud.helperclasses.StandardOutputObject;
+import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletContext;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,22 +16,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This servlet logs out the user by invalidating their current session then it
- * redirects them back to the appropriate login page.
  *
  * @author max
  */
-@WebServlet(name = "Logout", urlPatterns =
+@WebServlet(name = "GetSingleEvent", urlPatterns =
 {
-    "/logout"
+    "/getsingleevent"
 })
-public class Logout extends HttpServlet
+public class GetSingleEvent extends HttpServlet
 {
-
-    private static final Logger log = LoggerFactory.getLogger(Logout.class);
+    private static final Logger log = LoggerFactory.getLogger(GetSingleEvent.class);
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -38,33 +36,31 @@ public class Logout extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost()");
+        log.trace("doGet()");
+        String eventId = request.getParameter("eventId");
+        List<Event> eventList = DatabaseAccess.getSingleEvent(eventId);
+        StandardOutputObject output = new StandardOutputObject();
 
-        SessionManager.httpSessionRemove(request.getSession());
-        ServletContext sc = request.getServletContext();
-
-        StandardOutputObject outputObject = new StandardOutputObject();
-        boolean success = request.getSession(false) == null;
-        outputObject.setSuccess(success);
-
-        if (success)
+        if (eventList != null && !eventList.isEmpty())
         {
-            outputObject.setData(sc.getContextPath() + GlobalValues.getLOGIN_PAGE_URL());
+            output.setSuccess(true);
+            output.setData(eventList.get(0));
+            writeOutput(response, output);
         } else
         {
-            outputObject.setErrorCode(ErrorCodes.LOGOUT_FAILED);
+            output.setSuccess(false);
+            output.setErrorCode(ErrorCodes.GET_EVENT_FAILED);
+            writeOutput(response, output);
         }
-
-        writeOutput(response, outputObject);
     }
 
-    private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
+    private void writeOutput(HttpServletResponse response, StandardOutputObject output)
     {
         log.trace("writeOutput()");
-        String outputJSON = outputObject.getJSONString();
+        String outputJSON = output.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");
         try (PrintWriter out = response.getWriter())

@@ -1,6 +1,8 @@
-package core;
+package servlets.crud.helperclasses;
 
 import com.google.gson.Gson;
+import core.ErrorCodes;
+import core.ServerApi;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;

@@ -1,9 +1,9 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
-import database.databasemodels.Comment;
 import core.ErrorCodes;
-import core.ServletUtils;
-import core.StandardOutputObject;
+import database.databasemodels.Event;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,16 +19,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "DeleteComment", urlPatterns =
+@WebServlet(name = "SetEventUnresolved", urlPatterns =
 {
-    "/deletecomment"
+    "/seteventunresolved"
 })
-public class DeleteComment extends HttpServlet
+public class SetEventUnresolved extends HttpServlet
 {
+   private static final Logger log = LoggerFactory.getLogger(SetEventUnresolved.class);
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteComment.class);
-
-/**
+    /**
      * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
@@ -41,22 +40,21 @@ public class DeleteComment extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String commentIdJson = ServletUtils.getPostRequestJson(request);       
-        Comment commentToDelete = ServletUtils.deserializeCommentJson(commentIdJson);
+        String eventJsonString = ServletUtils.getPostRequestJson(request);       
+        Event unresolvedEvent = ServletUtils.deserializeEventJson(eventJsonString);
         
-        log.debug("doPost() comment to be deleted:"+commentToDelete.toString());
-
-        boolean success = DatabaseAccess.deleteComment(commentToDelete);
+        log.debug("doPost() event to be set to unresolved is:"+unresolvedEvent.toString());
+        boolean success = DatabaseAccess.setEventUnresolved(unresolvedEvent.getEventId());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        outputObject.setData(commentToDelete);
+        outputObject.setData(unresolvedEvent);
         if (success)
         {
-            log.info("comment deleted successfully");
+            log.info("event set to unresolved");
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCodes.DELETE_COMMENT_FAILED);
+            outputObject.setErrorCode(ErrorCodes.SET_EVENT_UNRESOLVED_FAILED);
             writeOutput(response, outputObject);
         }
     }

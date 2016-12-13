@@ -43,11 +43,11 @@ public class PopulateDatabase
                     + "A further update will be provided when we have further information.");
             ZonedDateTime nowUTC = ZonedDateTime.now(ZoneOffset.UTC);
             currentEvent.setStartTimeUnix(nowUTC.toEpochSecond());
-            currentEvent.setStartTimestamp(LocalDateTime.now());
+            //currentEvent.setStartTimestamp(LocalDateTime.now());
             currentEvent.setEventStatus("ModerateDisruption");
             currentEvent.setLastUpdatedUnix(nowUTC.toEpochSecond());
-            currentEvent.setLastUpdatedTimestamp(LocalDateTime.now());
-            currentEvent.setIsActive(rng.nextBoolean());
+            //currentEvent.setLastUpdatedTimestamp(LocalDateTime.now());
+            currentEvent.setIsResolved(rng.nextBoolean());
             currentEvent.setUserId("maxpower");
             eventList.add(currentEvent);
         }
@@ -62,7 +62,7 @@ public class PopulateDatabase
             currentComment.setEventId(eventUUIDs.get(rng.nextInt(30)));
             ZonedDateTime nowUTC = ZonedDateTime.now(ZoneOffset.UTC);
             currentComment.setPostTimeUnix(nowUTC.toEpochSecond());
-            currentComment.setPostTimestamp(LocalDateTime.now());
+            //currentComment.setPostTimestamp(LocalDateTime.now());
             currentComment.setUserId("commenter779");
             commentList.add(currentComment);
         }

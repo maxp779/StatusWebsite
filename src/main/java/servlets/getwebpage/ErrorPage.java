@@ -1,4 +1,4 @@
-package servlets.webpagecontrollers;
+package servlets.getwebpage;
 
 import core.GlobalValues;
 import java.io.IOException;

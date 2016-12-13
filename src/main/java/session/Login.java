@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import core.ErrorCodes;
 import core.GlobalValues;
-import core.ServletUtils;
-import core.StandardOutputObject;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
 import core.UserObject;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,12 +71,10 @@ public class Login extends HttpServlet
         
         log.trace("doPost()");
         String loginDetailsJson = ServletUtils.getPostRequestJson(request);
-        Map<String, String> loginDetailsMap = ServletUtils.convertJsonFormDataToMap(loginDetailsJson);
-        
+        Map<String, String> loginDetailsMap = ServletUtils.convertJsonStringToMap(loginDetailsJson);    
         String username = loginDetailsMap.get("username");
-        //Map<String,String> userCredentials = DatabaseAccess.getUserCredentialsFromEmail(loginEmail);
-        Map<String,String> userMap = GlobalValues.getUSERS();
         
+        Map<String,String> userMap = GlobalValues.getUSERS();       
         
         StandardOutputObject outputObject = new StandardOutputObject();
         if (!userMap.containsKey(username))

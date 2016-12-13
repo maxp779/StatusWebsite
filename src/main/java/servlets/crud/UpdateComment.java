@@ -1,10 +1,9 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
-import core.ErrorCodes;
-import core.ServletUtils;
-import core.StandardOutputObject;
 import database.databasemodels.Comment;
-import core.UserObject;
+import core.ErrorCodes;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,15 +19,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "AddComment", urlPatterns =
+@WebServlet(name = "UpdateComment", urlPatterns =
 {
-    "/addcomment"
+    "/updatecomment"
 })
-public class AddComment extends HttpServlet
+public class UpdateComment extends HttpServlet
 {
-    private static final Logger log = LoggerFactory.getLogger(AddComment.class);
 
-    /**
+    private static final Logger log = LoggerFactory.getLogger(UpdateComment.class);
+
+    
+ /**
      * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
@@ -42,24 +43,21 @@ public class AddComment extends HttpServlet
     {
         log.trace("doPost()");
         String commentJsonString = ServletUtils.getPostRequestJson(request);       
-        Comment newComment = ServletUtils.deserializeCommentJson(commentJsonString);
-        UserObject currentUser = ServletUtils.getCurrentUser(request);        
-        newComment.setUserId(currentUser.getUsername());
+        Comment updatedComment = ServletUtils.deserializeCommentJson(commentJsonString);
         
-        log.debug("doPost() comment to be added:"+newComment.toString());
+        log.debug("doPost() updated comment is:"+updatedComment.toString());
 
-        boolean success = DatabaseAccess.addComment(newComment);
+        boolean success = DatabaseAccess.updateComment(updatedComment);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        
-        outputObject.setData(newComment);
+        outputObject.setData(updatedComment);
         if (success)
         {
-            log.info("comment added successfully");
+            log.info("comment updated successfully");
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCodes.ADD_COMMENT_FAILED);
+            outputObject.setErrorCode(ErrorCodes.UPDATE_COMMENT_FAILED);
             writeOutput(response, outputObject);
         }
     }

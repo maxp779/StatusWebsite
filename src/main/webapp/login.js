@@ -37,15 +37,13 @@ var login = function () {
 
     function loginRequest()
     {
-        //get data from form, it is formatted as an array of json objects with the
-        //form data held in name/value pairs like so:
-        //[{"name":"username", "value":"maxpower"},{"name":"password", "value":"123"}]
         var formData = $("#loginForm").serializeArray();
+        var toServer = global.commonFunctions.convertFormArrayToJson(formData);
 
         $.ajax({
             url: global.serverApi.requests.login,
             type: "POST",
-            data: JSON.stringify(formData),
+            data: JSON.stringify(toServer),
             contentType: "application/json",
             dataType: "json",
             success: function (returnObject)

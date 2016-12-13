@@ -1,13 +1,12 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
 import core.ErrorCodes;
 import database.databasemodels.Event;
-import core.ServletUtils;
-import core.StandardOutputObject;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,16 +19,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetEventComments", urlPatterns =
+@WebServlet(name = "DeleteEvent", urlPatterns =
 {
-    "/geteventcomments"
+    "/deleteevent"
 })
-public class GetEventComments extends HttpServlet
+public class DeleteEvent extends HttpServlet
 {
-    private static final Logger log = LoggerFactory.getLogger(GetEventComments.class);
 
- /**
-     * Handles the HTTP <code>GET</code> method.
+    private static final Logger log = LoggerFactory.getLogger(DeleteEvent.class);
+
+   /**
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -37,27 +37,27 @@ public class GetEventComments extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet()");
-        String eventJsonString = ServletUtils.getPostRequestJson(request);
-        Event event = ServletUtils.deserializeEventJson(eventJsonString);      
+        log.trace("doPost()");
+        String eventIdJson = ServletUtils.getPostRequestJson(request);       
+        Event eventToDelete = ServletUtils.deserializeEventJson(eventIdJson);
         
-        List eventComments = DatabaseAccess.getEventComments(event);
-        StandardOutputObject output = new StandardOutputObject();
+        log.debug("doPost() event to be deleted:"+eventToDelete.toString());
 
-        if (eventComments != null)
+        boolean success = DatabaseAccess.deleteEvent(eventToDelete);
+        StandardOutputObject outputObject = new StandardOutputObject();
+        outputObject.setSuccess(success);
+        outputObject.setData(eventToDelete);
+        if (success)
         {
-            output.setSuccess(true);
-            output.setData(eventComments);
-            writeOutput(response, output);
-
+            log.info("event deleted successfully");
+            writeOutput(response, outputObject);
         } else
         {
-            output.setSuccess(false);
-            output.setErrorCode(ErrorCodes.GET_EVENT_COMMENTS_FAILED);
-            writeOutput(response, output);
+            outputObject.setErrorCode(ErrorCodes.DELETE_EVENT_FAILED);
+            writeOutput(response, outputObject);
         }
     }
 

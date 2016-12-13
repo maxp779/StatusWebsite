@@ -1,7 +1,7 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
 import core.ErrorCodes;
-import core.StandardOutputObject;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,16 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Gets both active and resolved events between two dates
  *
  * @author max
  */
-@WebServlet(name = "GetActiveEvents", urlPatterns =
+@WebServlet(name = "GetAllEvents", urlPatterns =
 {
-    "/getactiveevents"
+    "/getevents"
 })
-public class GetActiveEvents extends HttpServlet
+public class GetEvents extends HttpServlet
 {
-    private static final Logger log = LoggerFactory.getLogger(GetActiveEvents.class);
+    private static final Logger log = LoggerFactory.getLogger(GetEvents.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -39,19 +40,21 @@ public class GetActiveEvents extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        List activeEvents = DatabaseAccess.getActiveEvents();
+
+        Long fromDate = Long.parseLong(request.getParameter("from"));
+        Long toDate = Long.parseLong(request.getParameter("to"));
+        List events = DatabaseAccess.getEvents(fromDate, toDate);
         StandardOutputObject output = new StandardOutputObject();
 
-        if (activeEvents != null)
+        if (events != null)
         {
             output.setSuccess(true);
-            output.setData(activeEvents);
+            output.setData(events);
             writeOutput(response, output);
-
         } else
         {
             output.setSuccess(false);
-            output.setErrorCode(ErrorCodes.GET_CURRENT_EVENTS_FAILED);
+            output.setErrorCode(ErrorCodes.NO_EVENTS_FOUND);
             writeOutput(response, output);
         }
     }

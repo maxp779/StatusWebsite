@@ -12,6 +12,7 @@ import database.databasemodels.Event;
 import core.GlobalValues;
 import database.DatabaseAccess;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -93,13 +94,13 @@ public class RssServlet extends HttpServlet
         SyndContent description;
         
         //get active/scheduled events
-        List<Event> activeEvents = DatabaseAccess.getActiveEventsForRss();
+        List<Event> activeEvents = DatabaseAccess.getUnresolvedEventsForRss();
 
         for (Event currentEvent : activeEvents)
         {
             entry = new SyndEntryImpl();
             entry.setTitle(currentEvent.getEventTitle());
-            entry.setLink("http://localhost:8080/"+ GlobalValues.getACTIVE_EVENTS_PAGE());
+            entry.setLink("http://localhost:8080/"+ GlobalValues.getUNRESOLVED_EVENTS_PAGE());
             try
             {
                 LocalDateTime startTimestamp = currentEvent.getStartTimestamp();        

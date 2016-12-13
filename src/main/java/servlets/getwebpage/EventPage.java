@@ -1,8 +1,13 @@
-package servlets.webpagecontrollers;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package servlets.getwebpage;
 
 import core.GlobalValues;
-import session.SessionManager;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,14 +21,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "LoginPage", urlPatterns =
+@WebServlet(name = "EventPage", urlPatterns =
 {
-    "/getloginpage"
+    "/geteventpage"
 })
-public class LoginPage extends HttpServlet
+public class EventPage extends HttpServlet
 {
-
-    private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
+    private static final Logger log = LoggerFactory.getLogger(EventPage.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -38,18 +42,10 @@ public class LoginPage extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
+        String eventId = request.getParameter("eventId");
         ServletContext servletContext = this.getServletContext();
-        
-        //redirect to admin page if user is already logged in
-        if (SessionManager.sessionValidate(request))
-        {
-            String webPageURL = servletContext.getContextPath() + GlobalValues.getADMIN_PAGE_URL();
-            response.sendRedirect(webPageURL);
-        } else
-        {
-            String webPageURL = servletContext.getContextPath() + GlobalValues.getLOGIN_PAGE_URL();
-            response.sendRedirect(webPageURL);
-        }
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getEVENT_PAGE_URL() + "?eventId=" + eventId;
+        response.sendRedirect(webPageURL);
     }
 
     /**

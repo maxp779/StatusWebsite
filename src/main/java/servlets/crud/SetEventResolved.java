@@ -1,11 +1,12 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
 import core.ErrorCodes;
-import core.StandardOutputObject;
+import database.databasemodels.Event;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,16 +19,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetAllComments", urlPatterns =
+@WebServlet(name = "UpdateEventResolvedState", urlPatterns =
 {
-    "/getallcomments"
+    "/seteventresolved"
 })
-public class GetAllComments extends HttpServlet
+public class SetEventResolved extends HttpServlet
 {
-    private static final Logger log = LoggerFactory.getLogger(GetAllComments.class);
+
+    private static final Logger log = LoggerFactory.getLogger(SetEventResolved.class);
 
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -35,23 +37,26 @@ public class GetAllComments extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet()");
-        List allComments = DatabaseAccess.getAllComments();
-        StandardOutputObject output = new StandardOutputObject();
-
-        if (allComments != null)
+        log.trace("doPost()");
+        String eventJsonString = ServletUtils.getPostRequestJson(request);       
+        Event resolvedEvent = ServletUtils.deserializeEventJson(eventJsonString);
+        
+        log.debug("doPost() event to be set to resolved is:"+resolvedEvent.toString());
+        boolean success = DatabaseAccess.setEventResolved(resolvedEvent.getEventId());
+        StandardOutputObject outputObject = new StandardOutputObject();
+        outputObject.setSuccess(success);
+        outputObject.setData(resolvedEvent);
+        if (success)
         {
-            output.setSuccess(true);
-            output.setData(allComments);
-            writeOutput(response, output);
+            log.info("event set to resolved");
+            writeOutput(response, outputObject);
         } else
         {
-            output.setSuccess(false);
-            output.setErrorCode(ErrorCodes.GET_ALL_COMMENTS_FAILED);
-            writeOutput(response, output);
+            outputObject.setErrorCode(ErrorCodes.SET_EVENT_RESOLVED_FAILED);
+            writeOutput(response, outputObject);
         }
     }
 

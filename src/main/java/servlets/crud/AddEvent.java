@@ -1,11 +1,14 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
+import database.databasemodels.Event;
 import core.ErrorCodes;
-import core.StandardOutputObject;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
+import core.UserObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,16 +21,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetAllEvents", urlPatterns =
+@WebServlet(name = "AddEvent", urlPatterns =
 {
-    "/getallevents"
+    "/addevent"
 })
-public class GetAllEvents extends HttpServlet
+public class AddEvent extends HttpServlet
 {
-    private static final Logger log = LoggerFactory.getLogger(GetAllEvents.class);
+
+    private static final Logger log = LoggerFactory.getLogger(AddEvent.class);
 
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -35,25 +39,32 @@ public class GetAllEvents extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet()");
-        List allEvents = DatabaseAccess.getAllEvents();
-        StandardOutputObject output = new StandardOutputObject();
+        log.trace("doPost()");
+        String eventJsonString = ServletUtils.getPostRequestJson(request);
+        Event newEvent = ServletUtils.deserializeEventJson(eventJsonString);
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
+        newEvent.setUserId(currentUser.getUsername());
+        
+        newEvent.setEventId(UUID.randomUUID().toString());
+        newEvent.setIsResolved(false);
+        
+        log.debug("doPost() event to be added:" + newEvent.toString());
 
-        if (allEvents != null)
+        boolean success = DatabaseAccess.addEvent(newEvent);
+        StandardOutputObject outputObject = new StandardOutputObject();
+        outputObject.setSuccess(success);
+        outputObject.setData(newEvent);
+        if (success)
         {
-            output.setSuccess(true);
-            output.setData(allEvents);
-            writeOutput(response, output);
-
+            log.info("event added successfully");
+            writeOutput(response, outputObject);
         } else
         {
-            output.setSuccess(false);
-            output.setErrorCode(ErrorCodes.GET_ALL_EVENTS_FAILED);
-            writeOutput(response, output);
-
+            outputObject.setErrorCode(ErrorCodes.ADD_EVENT_FAILED);
+            writeOutput(response, outputObject);
         }
     }
 

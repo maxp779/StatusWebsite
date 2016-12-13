@@ -1,9 +1,9 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
-import database.databasemodels.Comment;
 import core.ErrorCodes;
-import core.ServletUtils;
-import core.StandardOutputObject;
+import database.databasemodels.Event;
+import servlets.crud.helperclasses.ServletUtils;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,16 +19,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "UpdateComment", urlPatterns =
+@WebServlet(name = "UpdateEventStatus", urlPatterns =
 {
-    "/updatecomment"
+    "/updateevent"
 })
-public class UpdateComment extends HttpServlet
+public class UpdateEvent extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(UpdateComment.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateEvent.class);
 
-    
  /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -42,22 +41,22 @@ public class UpdateComment extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String commentJsonString = ServletUtils.getPostRequestJson(request);       
-        Comment updatedComment = ServletUtils.deserializeCommentJson(commentJsonString);
+        String updatedEventJson = ServletUtils.getPostRequestJson(request);       
+        Event updatedEvent = ServletUtils.deserializeEventJson(updatedEventJson);
         
-        log.debug("doPost() updated comment is:"+updatedComment.toString());
+        log.debug("doPost() updated event is:"+updatedEvent.toString());
 
-        boolean success = DatabaseAccess.updateComment(updatedComment);
+        boolean success = DatabaseAccess.updateEvent(updatedEvent);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        outputObject.setData(updatedComment);
+        outputObject.setData(updatedEvent);
         if (success)
         {
-            log.info("comment updated successfully");
+            log.info("event updated successfully");
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCodes.UPDATE_COMMENT_FAILED);
+            outputObject.setErrorCode(ErrorCodes.UPDATE_EVENT_FAILED);
             writeOutput(response, outputObject);
         }
     }

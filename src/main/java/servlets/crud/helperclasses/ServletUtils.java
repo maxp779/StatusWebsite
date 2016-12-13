@@ -1,12 +1,19 @@
-package core;
+package servlets.crud.helperclasses;
 
 import database.databasemodels.Comment;
 import database.databasemodels.Event;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import core.UserObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,14 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Various useful methods for the servlet classes to use. E.g getting request data
- * in various formats.
- * 
+ * Various useful methods for the servlet classes to use. E.g getting request
+ * data in various formats.
+ *
  * @author max
  */
 public class ServletUtils
 {
-
     private static final Logger log = LoggerFactory.getLogger(ServletUtils.class);
 
     /**
@@ -36,7 +42,7 @@ public class ServletUtils
      */
     public static String getPostRequestJson(HttpServletRequest request)
     {
-        log.trace("getPOSTRequestJSONString()");
+        log.trace("getPostRequestJson()");
 
         BufferedReader reader = null;
         try
@@ -67,10 +73,10 @@ public class ServletUtils
         return jsonString;
     }
 
-    public static Map<String, String> convertJSONStringToMap(String aJsonString)
+    public static Map<String, String> convertJsonStringToMap(String aJsonString)
     {
-        log.trace("convertJSONStringToMap()");
-        log.debug("aJSONString:" + aJsonString);
+        log.trace("convertJsonStringToMap()");
+        log.debug("aJsonString:" + aJsonString);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {
@@ -80,9 +86,9 @@ public class ServletUtils
         return outputMap;
     }
 
-    public static String convertMapToJSONString(Map aMap)
+    public static String convertMapToJsonString(Map aMap)
     {
-        log.trace("convertMapToJSONString()");
+        log.trace("convertMapToJsonString()");
         Gson gson = new Gson();
         String aJsonString = gson.toJson(aMap);
         log.debug(aJsonString);
@@ -100,9 +106,9 @@ public class ServletUtils
      * @return Map<String,String> containing the relevant values from an HTML
      * form
      */
-    public static Map<String, String> convertJsonFormDataToMap(String aJSONArray)
+    public static Map<String, String> convertJsonFormDataToMap(String aJsonArray)
     {
-        log.trace("convertJSONFormDataToMap()");
+        log.trace("convertJsonFormDataToMap()");
         Gson gson = new Gson();
         Type arrayListMap = new TypeToken<ArrayList<Map>>()
         {
@@ -110,7 +116,7 @@ public class ServletUtils
 
         //list will be in the form
         //list=[{name=email, value=test@test.com}, {name=password, value=testtest}]
-        List<Map> loginList = gson.fromJson(aJSONArray, arrayListMap);
+        List<Map> loginList = gson.fromJson(aJsonArray, arrayListMap);
         Map<String, String> output = new HashMap<>();
 
         for (Map<String, String> currentMap : loginList)
@@ -131,7 +137,7 @@ public class ServletUtils
     {
         return (UserObject) request.getSession().getAttribute("user");
     }
-    
+
     public static Comment deserializeCommentJson(String aJsonString)
     {
         log.trace("deserializeCommentJson()");
@@ -139,7 +145,7 @@ public class ServletUtils
         Comment commentObject = gson.fromJson(aJsonString, Comment.class);
         return commentObject;
     }
-        
+
     public static Event deserializeEventJson(String aJsonString)
     {
         log.trace("deserializeEventJson()");
@@ -147,4 +153,5 @@ public class ServletUtils
         Event eventObject = gson.fromJson(aJsonString, Event.class);
         return eventObject;
     }
+
 }

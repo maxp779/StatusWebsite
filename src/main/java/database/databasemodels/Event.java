@@ -1,5 +1,6 @@
 package database.databasemodels;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -12,14 +13,14 @@ public class Event
     String userId;
     String eventId;
     String eventText;
-    boolean isActive;
+    boolean isResolved;
     String eventStatus;
     String eventTitle;
-    Long startTimeUnix;
+    long startTimeUnix;
     LocalDateTime startTimestamp;
-    Long lastUpdatedUnix;
+    long lastUpdatedTimeUnix;
     LocalDateTime lastUpdatedTimestamp;
-    Long resolvedTimeUnix;
+    long resolvedTimeUnix;
     LocalDateTime resolvedTimestamp;
 
     public String getUserId()
@@ -52,14 +53,14 @@ public class Event
         this.eventText = eventText;
     }
 
-    public boolean isActive()
+    public boolean isResolved()
     {
-        return isActive;
+        return isResolved;
     }
 
-    public void setIsActive(boolean isActive)
+    public void setIsResolved(boolean isResolved)
     {
-        this.isActive = isActive;
+        this.isResolved = isResolved;
     }
 
     public String getEventStatus()
@@ -104,12 +105,12 @@ public class Event
 
     public Long getLastUpdatedUnix()
     {
-        return lastUpdatedUnix;
+        return lastUpdatedTimeUnix;
     }
 
     public void setLastUpdatedUnix(Long lastUpdatedUnix)
     {
-        this.lastUpdatedUnix = lastUpdatedUnix;
+        this.lastUpdatedTimeUnix = lastUpdatedUnix;
     }
 
     public LocalDateTime getLastUpdatedTimestamp()
@@ -157,7 +158,7 @@ public class Event
                 + System.lineSeparator()
                 + " status:" + this.eventStatus
                 + System.lineSeparator()
-                + " isResolved:" + this.isActive + "]";
+                + " isResolved:" + this.isResolved + "]";
     }
 
 }

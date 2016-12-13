@@ -1,5 +1,6 @@
 package database.databasemodels;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +14,7 @@ public class Comment
     String commentId;
     String commentText;
     long postTimeUnix;
-    LocalDateTime postTimestamp;
+    Timestamp postTimestamp;
 
     public long getPostTimeUnix()
     {
@@ -25,12 +26,12 @@ public class Comment
         this.postTimeUnix = postTimeUnix;
     }
 
-    public LocalDateTime getPostTimestamp()
+    public Timestamp getPostTimestamp()
     {
         return postTimestamp;
     }
 
-    public void setPostTimestamp(LocalDateTime postTimestamp)
+    public void setPostTimestamp(Timestamp postTimestamp)
     {
         this.postTimestamp = postTimestamp;
     }

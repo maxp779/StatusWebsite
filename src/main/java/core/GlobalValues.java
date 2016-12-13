@@ -8,7 +8,8 @@ import java.util.Map;
  * This class contains important values all in one location
  *
  * Some of this is currently hardcoded such a login credentials
- * and database connection string but in future may be fetched from config.json file
+ * and database connection string but in future will be moved out of here and
+ * fetched from config.json file
  * 
  * @author max
  */
@@ -25,21 +26,23 @@ public class GlobalValues
     
     //urls
     private static final String LOGIN_PAGE_URL = "/login.html";
-    private static final String ADMIN_PAGE_URL = "/admin.html";
+    private static final String ADMIN_PAGE_URL = "/adminPage.html";
+    private static final String ADMIN_EVENT_PAGE_URL = "/adminEventPage.html";
+    private static final String EVENT_PAGE_URL = "/eventPage.html";
     private static final String ERROR_PAGE_URL = "/error.html";
-    private static final String ACTIVE_EVENTS_PAGE_URL = "/activeEvents.html";
+    private static final String UNRESOLVED_EVENTS_PAGE_URL = "/unresolvedEvents.html";
     private static final String RESOLVED_EVENTS_PAGE_URL = "/resolvedEvents.html";
 
     //login page request, this is where the user is redirected to when attempting to access unauthorized resources
     private static final Request LOGIN_PAGE_REQUEST = Request.getloginpage;
-    private static final Request ACTIVE_EVENTS_PAGE = Request.getactiveeventspage;
+    private static final Request UNRESOLVED_EVENTS_PAGE = Request.getunresolvedeventspage;
     private static final Request RSS_REQUEST = Request.rss;
        
     //misc values
     private static final int SESSION_TIMEOUT_VALUE = 3600; //0 or less will never timeout, this value is in seconds   
 
     //database values
-    private static final String DATABASE_URL = "server=127.0.0.1; uid=status_website_user; pwd=c86addf8-849d-4603-ba63-baa5e1f2b5c9; database=status_website_ef; SslMode=None";
+    private static final String DATABASE_URL = "server=127.0.0.1; uid=status_website_user; pwd=c86addf8-849d-4603-ba63-baa5e1f2b5c9; database=status_website_ef;";
 
     //requests which require authentication i.e user needs to be logged in to do this stuff
     private static final String[] AUTH_RESOURCES =
@@ -53,12 +56,23 @@ public class GlobalValues
         Request.updatecomment.toString(),
         Request.deletecomment.toString(),
         Request.getadminpage.toString(),
-        "admin.html"
+        "adminPage.html",
+        "adminEventPage.html"
     };
 
-    public static Request getACTIVE_EVENTS_PAGE()
+    public static String getEVENT_PAGE_URL()
     {
-        return ACTIVE_EVENTS_PAGE;
+        return EVENT_PAGE_URL;
+    } 
+
+    public static String getADMIN_EVENT_PAGE_URL()
+    {
+        return ADMIN_EVENT_PAGE_URL;
+    }
+
+    public static Request getUNRESOLVED_EVENTS_PAGE()
+    {
+        return UNRESOLVED_EVENTS_PAGE;
     } 
 
     public static Request getRSS_REQUEST()
@@ -95,8 +109,8 @@ public class GlobalValues
         return ADMIN_PAGE_URL;
     }
 
-    public static String getACTIVE_EVENTS_PAGE_URL() {
-        return ACTIVE_EVENTS_PAGE_URL;
+    public static String getUNRESOLVED_EVENTS_PAGE_URL() {
+        return UNRESOLVED_EVENTS_PAGE_URL;
     }
 
     public static String getRESOLVED_EVENTS_PAGE_URL() {

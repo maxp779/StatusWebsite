@@ -3,37 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servlets.webpagecontrollers;
+package servlets.getwebpage;
 
 import core.GlobalValues;
 import java.io.IOException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This servlet determines whether to send the client to the mobile login page
- * or the desktop login page, if they are already logged in it will send the
- * client to the appropriate main page
  *
  * @author max
  */
-@WebServlet(name = "ActiveEventsPage", urlPatterns =
+@WebServlet(name = "ResolvedEventsPage", urlPatterns =
 {
-    "/getactiveeventspage"
-
+    "/getresolvedeventspage"
 })
-public class ActiveEventsPage extends HttpServlet
+public class ResolvedEventsPage extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(ActiveEventsPage.class);
+    private static final Logger log = LoggerFactory.getLogger(ResolvedEventsPage.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -48,8 +42,8 @@ public class ActiveEventsPage extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        ServletContext sc = this.getServletContext();
-        String webPageURL = sc.getContextPath() + GlobalValues.getACTIVE_EVENTS_PAGE_URL();
+        ServletContext servletContext = this.getServletContext();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getRESOLVED_EVENTS_PAGE_URL();
         response.sendRedirect(webPageURL);
     }
 

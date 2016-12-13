@@ -1,10 +1,18 @@
 jQuery(document).ready(function () {
     global.ajaxFunctions.getServerApi(function () {
         global.commonFunctions.setupNavBar();
-        resolvedEvents.setupDatepickers(function () {
-            resolvedEvents.getResolvedEventsBetweenDates(function () {
-                vueFunctions.loadResolvedEventsComponent();
-                resolvedEvents.setupEvents();
+        vueFunctions.loadDatepickers(function () {
+            resolvedEvents.setupDatepickers(function () {
+
+                var from = $('#datepicker1').data("DateTimePicker").date();
+                var to = $('#datepicker2').data("DateTimePicker").date();
+                var fromUnix = from.unix(); //UTC unix
+                var toUnix = to.unix();
+
+                global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix, function () {
+                    vueFunctions.loadResolvedEventsComponent();
+                    resolvedEvents.setupEvents();
+                });
             });
         });
     });
@@ -12,49 +20,21 @@ jQuery(document).ready(function () {
 
 var resolvedEvents = function () {
 
-    function getResolvedEventsBetweenDates(callback)
-    {
-        var from = $('#datepicker1').data("DateTimePicker").date();
-        var to = $('#datepicker2').data("DateTimePicker").date();
-
-        var toServer = {};
-        toServer.from = from.unix(); //UTC unix
-        toServer.to = to.unix();
-
-        jQuery.ajax({
-            url: global.serverApi.requests.getresolvedevents,
-            type: "get",
-            data: toServer,
-            contentType: "application/json",
-            dataType: "json",
-            success: function (returnObject)
-            {
-                console.log("getResolvedEventsBetweenDates");
-
-                console.log(returnObject);
-                if (returnObject.success === true)
-                {
-                    global.setGlobalValues.setResolvedEventsArray(returnObject.data);
-                } else
-                {
-                    document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
-                }
-                if (callback)
-                {
-                    callback();
-                }
-            },
-            error: function (xhr, status, error)
-            {
-                console.log("Ajax request failed:" + error.toString());
-            }
-        });
-    }
-
     function setupEvents()
     {
-        $("#getEventsButton").on("click", function (e) {
-            getResolvedEventsBetweenDates();
+        jQuery("#getEventsButton").on("click", function (e) {
+            var from = $('#datepicker1').data("DateTimePicker").date();
+            var to = $('#datepicker2').data("DateTimePicker").date();
+            var fromUnix = from.unix(); //UTC unix
+            var toUnix = to.unix();
+            global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix);
+        });
+
+        jQuery(document).on("click", ".eventLink", function () {
+            var clickedElement = this;
+            var eventId = clickedElement.dataset.eventId;
+            var url = global.serverApi.requests.geteventpage;
+            window.location = url + "?eventId=" + eventId;
         });
     }
 
@@ -66,33 +46,36 @@ var resolvedEvents = function () {
      */
     function setupDatepickers(callback)
     {
-        $('#datepicker2').datetimepicker({
+        jQuery('#datepicker2').datetimepicker({
             viewMode: 'days',
             format: 'DD/MM/YYYY'
         });
-        $('#datepicker1').datetimepicker({
+        jQuery('#datepicker1').datetimepicker({
             useCurrent: false, //Important! See issue #1075
             viewMode: 'days',
             format: 'DD/MM/YYYY'
         });
 
         //prevents days in the future being selected
-        $("#datepicker2").on("dp.change", function (e) {
-            $('#datepicker1').data("DateTimePicker").minDate(e.date);
+        jQuery("#datepicker2").on("dp.change", function (e) {
+            jQuery('#datepicker1').data("DateTimePicker").minDate(e.date);
         });
-        $("#datepicker1").on("dp.change", function (e) {
-            $('#datepicker2').data("DateTimePicker").maxDate(e.date);
+        jQuery("#datepicker1").on("dp.change", function (e) {
+            jQuery('#datepicker2').data("DateTimePicker").maxDate(e.date);
         });
 
-        //by default show from today
-        $('#datepicker1').data("DateTimePicker").defaultDate(new Date());
-        
+        //by default show from one day in the future
+        var date = new Date();
+        date.setDate(date.getDate() + 1);
+        jQuery('#datepicker1').data("DateTimePicker").defaultDate(date);
+
         //to one month in the past
         var oneMonthAgo = new Date();
         oneMonthAgo.setMonth((new Date().getMonth() - 1));
-        $('#datepicker2').data("DateTimePicker").defaultDate(oneMonthAgo);
+        jQuery('#datepicker2').data("DateTimePicker").defaultDate(oneMonthAgo);
 
-        $('#datepicker1').data("DateTimePicker").showTodayButton(true);
+        jQuery('#datepicker1').data("DateTimePicker").showTodayButton(true);
+        jQuery('#datepicker2').data("DateTimePicker").showTodayButton(true);
 
         if (callback)
         {
@@ -101,7 +84,6 @@ var resolvedEvents = function () {
     }
 
     return{
-        getResolvedEventsBetweenDates: getResolvedEventsBetweenDates,
         setupDatepickers: setupDatepickers,
         setupEvents: setupEvents
     };

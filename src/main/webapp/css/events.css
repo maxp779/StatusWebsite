@@ -1,29 +1,48 @@
 .operational
 {
-    color: #27AE60;
+    color: #009311;
 }
 .plannedMaintenance
 {
-    color: #00AAF0;
+    color: #0061ff;
 }
 .minorDisruption
 {
-    color: #f4e542;
+    color: #efd932;
 }
 .moderateDisruption
 {
-    color: #FFA837;
+    color: #ff8800;
 }
 .severeDisruption
 {
-    color: #C44031;
+    color: #ff0000;
 }
 .securityBreach
 {
-    color: #000000;
+    color: #9e42f4;
 }
 
 .spacer
 {
     margin-top: 10px;
+}
+
+.glyphicon.spinning {
+    animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+
+textarea{
+    resize: vertical;
 }

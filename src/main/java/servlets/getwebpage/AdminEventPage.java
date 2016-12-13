@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servlets.webpagecontrollers;
+package servlets.getwebpage;
 
 import core.GlobalValues;
 import java.io.IOException;
@@ -17,17 +17,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This is a page that will show an individual event with comments and all
+ * details etc. It is intended to be shown when an event from a list is clicked
+ * on.
  *
  * @author max
  */
-@WebServlet(name = "ResolvedEventsPage", urlPatterns =
+@WebServlet(name = "AdminEventPage", urlPatterns =
 {
-    "/getresolvedeventspage"
+    "/getadmineventpage"
 })
-public class ResolvedEventsPage extends HttpServlet
+public class AdminEventPage extends HttpServlet
 {
-
-    private static final Logger log = LoggerFactory.getLogger(ResolvedEventsPage.class);
+    private static final Logger log = LoggerFactory.getLogger(AdminEventPage.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -42,8 +44,9 @@ public class ResolvedEventsPage extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
+        String eventId = request.getParameter("eventId");
         ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath() + GlobalValues.getRESOLVED_EVENTS_PAGE_URL();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getADMIN_EVENT_PAGE_URL() + "?eventId=" + eventId;
         response.sendRedirect(webPageURL);
     }
 

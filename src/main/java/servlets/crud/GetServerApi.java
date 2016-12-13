@@ -1,12 +1,12 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
 import core.ErrorCodes;
-import database.databasemodels.Event;
-import core.ServletUtils;
-import core.StandardOutputObject;
-import database.DatabaseAccess;
+import core.ServerApi;
+import servlets.crud.helperclasses.StandardOutputObject;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,17 +19,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "DeleteEvent", urlPatterns =
+@WebServlet(name = "GetServerApi", urlPatterns =
 {
-    "/deleteevent"
+    "/getserverapi"
 })
-public class DeleteEvent extends HttpServlet
+public class GetServerApi extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteEvent.class);
+    private static final Logger log = LoggerFactory.getLogger(GetServerApi.class);
 
-   /**
-     * Handles the HTTP <code>POST</code> method.
+    /**
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -37,34 +37,25 @@ public class DeleteEvent extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost()");
-        String eventIdJson = ServletUtils.getPostRequestJson(request);       
-        Event eventToDelete = ServletUtils.deserializeEventJson(eventIdJson);
-        
-        log.debug("doPost() event to be deleted:"+eventToDelete.toString());
+        log.trace("doGet()");
 
-        boolean success = DatabaseAccess.deleteEvent(eventToDelete);
+        Map<String, Object> serverApiMap = new HashMap<>();
+        serverApiMap.put("requests", ServerApi.getREQUESTS_API_MAP_STRING());
+        serverApiMap.put("errorCodes", ServerApi.getERROR_CODES_MAP_STRING());
+
         StandardOutputObject outputObject = new StandardOutputObject();
-        outputObject.setSuccess(success);
-        outputObject.setData(eventToDelete);
-        if (success)
-        {
-            log.info("event deleted successfully");
-            writeOutput(response, outputObject);
-        } else
-        {
-            outputObject.setErrorCode(ErrorCodes.DELETE_EVENT_FAILED);
-            writeOutput(response, outputObject);
-        }
+        outputObject.setSuccess(true);
+        outputObject.setData(serverApiMap);
+        writeOutput(response, outputObject);
     }
 
-    private void writeOutput(HttpServletResponse response, StandardOutputObject output)
+    private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
         log.trace("writeOutput()");
-        String outputJSON = output.getJSONString();
+        String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");
         try (PrintWriter out = response.getWriter())

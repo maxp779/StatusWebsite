@@ -1,13 +1,11 @@
-package servlets.actioncontrollers;
+package servlets.crud;
 
-import database.databasemodels.Event;
 import core.ErrorCodes;
-import core.ServletUtils;
-import core.StandardOutputObject;
-import core.UserObject;
+import servlets.crud.helperclasses.StandardOutputObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,20 +15,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Deals with queries for resolved events between two dates
  *
  * @author max
  */
-@WebServlet(name = "AddEvent", urlPatterns =
+@WebServlet(name = "GetResolvedEvents", urlPatterns =
 {
-    "/addevent"
+    "/getresolvedevents"
 })
-public class AddEvent extends HttpServlet
+public class GetResolvedEvents extends HttpServlet
 {
-
-    private static final Logger log = LoggerFactory.getLogger(AddEvent.class);
+    private static final Logger log = LoggerFactory.getLogger(GetResolvedEvents.class);
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -38,29 +36,26 @@ public class AddEvent extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost()");
-        String eventJsonString = ServletUtils.getPostRequestJson(request);
-        Event newEvent = ServletUtils.deserializeEventJson(eventJsonString);
-        UserObject currentUser = ServletUtils.getCurrentUser(request);
-        newEvent.setUserId(currentUser.getUsername());
+        log.trace("doGet()");
 
-        log.debug("doPost() event to be added:" + newEvent.toString());
+        Long fromDate = Long.parseLong(request.getParameter("from"));
+        Long toDate = Long.parseLong(request.getParameter("to"));
+        List resolvedEvents = DatabaseAccess.getResolvedEvents(fromDate, toDate);
+        StandardOutputObject output = new StandardOutputObject();
 
-        boolean success = DatabaseAccess.addEvent(newEvent);
-        StandardOutputObject outputObject = new StandardOutputObject();
-        outputObject.setSuccess(success);
-        outputObject.setData(newEvent);
-        if (success)
+        if (resolvedEvents != null)
         {
-            log.info("event added successfully");
-            writeOutput(response, outputObject);
+            output.setSuccess(true);
+            output.setData(resolvedEvents);
+            writeOutput(response, output);
         } else
         {
-            outputObject.setErrorCode(ErrorCodes.ADD_EVENT_FAILED);
-            writeOutput(response, outputObject);
+            output.setSuccess(false);
+            output.setErrorCode(ErrorCodes.NO_EVENTS_FOUND);
+            writeOutput(response, output);
         }
     }
 
