@@ -28,8 +28,7 @@ public class UpdateComment extends HttpServlet
 
     private static final Logger log = LoggerFactory.getLogger(UpdateComment.class);
 
-    
- /**
+    /**
      * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
@@ -42,21 +41,27 @@ public class UpdateComment extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String commentJsonString = ServletUtils.getPostRequestJson(request);       
+        String commentJsonString = ServletUtils.getPostRequestJson(request);
         Comment updatedComment = ServletUtils.deserializeCommentJson(commentJsonString);
-        
-        log.debug("doPost() updated comment is:"+updatedComment.toString());
 
-        boolean success = DatabaseAccess.updateComment(updatedComment);
+        log.debug("doPost() updated comment is:" + updatedComment.toString());
+
+        boolean updateCommentSuccess = DatabaseAccess.updateComment(updatedComment);
+        boolean updateLastUpdatedTimeSuccess = DatabaseAccess.setEventLastUpdatedTime(updatedComment.getEventId()
+        ,ServletUtils.getCurrentUtcSeconds()
+        ,ServletUtils.getCurrentUtcLocalDateTime());
+
         StandardOutputObject outputObject = new StandardOutputObject();
-        outputObject.setSuccess(success);
-        outputObject.setData(updatedComment);
-        if (success)
+        if (updateCommentSuccess && updateLastUpdatedTimeSuccess)
         {
             log.info("comment updated successfully");
+            log.info("event last updated time updated successfully");
+            outputObject.setSuccess(true);
+            outputObject.setData(updatedComment);
             writeOutput(response, outputObject);
         } else
         {
+            outputObject.setSuccess(false);
             outputObject.setErrorCode(ErrorCodes.UPDATE_COMMENT_FAILED);
             writeOutput(response, outputObject);
         }

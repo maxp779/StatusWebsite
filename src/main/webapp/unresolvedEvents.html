@@ -4,6 +4,7 @@
         <title>Service status</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel=icon href="/img/favicon.ico">
         <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript" crossorigin="anonymous" ></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript" crossorigin="anonymous"></script>
@@ -13,16 +14,13 @@
         <script src="vueFunctions.js" type="text/javascript"></script>
         <script src="unresolvedEvents.js" type="text/javascript"></script>
         <link href="css/events.css" rel="stylesheet">
-
-
-
     </head>
     <body>
         <div class="container">
             <div class="row">
                 <div class="col-sm-6 col-sm-offset-4">
-                    <h1>Server hosting</h1>
-                    <h3>Active events   <img src="/img/rss.png" style="width:20px;height:20px;"></h3>
+                    <h1>Server hosting <img src="/img/logo.png" style="width:75px;height:75px;"></h1>
+                    <h3>Active events <span id="rssLink"></span></h3>
                 </div>
             </div>
             <div class="row">
@@ -32,7 +30,7 @@
                             <ul class="nav nav-pills">
                                 <li role="presentation" class="active"><a id="unresolvedEventsNav">Home</a></li>
                                 <li role="presentation"><a id="resolvedEventsNav">Resolved events</a></li>
-                                <li role="presentation"><a id="loginNav">Login</a></li>
+                                <li role="presentation"><a id="adminNav">Admin</a></li>
                             </ul>
                         </div>
                     </div>

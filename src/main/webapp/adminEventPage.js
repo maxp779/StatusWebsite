@@ -1,5 +1,6 @@
 jQuery(document).ready(function () {
     global.ajaxFunctions.getServerApi(function () {
+        global.commonFunctions.setupRssFeed();
         var eventId = global.commonFunctions.getQueryVariable("eventId");
         global.ajaxFunctions.getEvent(eventId, function () {
             global.ajaxFunctions.getEventComments(eventId, function () {
@@ -124,7 +125,6 @@ var adminEventPage = function () {
                 dataType: "json",
                 success: function (returnObject)
                 {
-                    console.log(returnObject);
                     var feedbackElement = document.getElementById("updateEventFeedback");
                     if (returnObject.success === true)
                     {

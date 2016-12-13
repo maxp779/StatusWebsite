@@ -41,11 +41,15 @@ public class UpdateEvent extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
+        
         String updatedEventJson = ServletUtils.getPostRequestJson(request);       
         Event updatedEvent = ServletUtils.deserializeEventJson(updatedEventJson);
+        updatedEvent.setLastUpdatedUnix(ServletUtils.getCurrentUtcSeconds());
+        updatedEvent.setLastUpdatedTimestamp(ServletUtils.getCurrentUtcLocalDateTime());
+        updatedEvent.setStartTimestamp(ServletUtils.getCurrentUtcLocalDateTime(updatedEvent.getStartTimeUnix()));
         
         log.debug("doPost() updated event is:"+updatedEvent.toString());
-
+        
         boolean success = DatabaseAccess.updateEvent(updatedEvent);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

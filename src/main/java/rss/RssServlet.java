@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
@@ -30,14 +31,15 @@ import org.slf4j.LoggerFactory;
 /**
  * This servlet was not created by myself, it was obtained from here:
  * https://rometools.github.io/rome/RssAndAtOMUtilitiEsROMEV0.5AndAboveTutorialsAndArticles/RssAndAtOMUtilitiEsROMEV0.5TutorialUsingROMEWithinAServletToCreateAndReturnAFeed.html
- * I have modified the code to output the scheduled and current events.
+ * I have modified the code to output the unresolved events.
  *
  * @originalauthor Alejandro Abdelnur
  * @modified by Max Power
  */
 @WebServlet(name = "RssServlet", urlPatterns =
 {
-    "/rss"
+    "/rss",
+    "/rss/"
 })
 public class RssServlet extends HttpServlet
 {
@@ -78,32 +80,42 @@ public class RssServlet extends HttpServlet
         }
     }
 
-    protected SyndFeed getFeed(HttpServletRequest req) throws IOException, FeedException
+    protected SyndFeed getFeed(HttpServletRequest request) throws IOException, FeedException
     {
-
         ServletContext servletContext = this.getServletContext();
         String rssLink = servletContext.getContextPath() + GlobalValues.getRSS_REQUEST();
 
         SyndFeed feed = new SyndFeedImpl();
-        feed.setTitle("Sample Feed (created with ROME)");
+        feed.setTitle("Status website RSS feed");
         feed.setLink(rssLink);
-        feed.setDescription("This feed has been created using ROME (Java syndication utilities");
+        feed.setDescription("This feed has been created using ROME (Java syndication utilities)");
 
         List entries = new ArrayList();
         SyndEntry entry;
         SyndContent description;
-        
-        //get active/scheduled events
-        List<Event> activeEvents = DatabaseAccess.getUnresolvedEventsForRss();
 
-        for (Event currentEvent : activeEvents)
+        //get unresolved events
+        List<Event> unresolvedEvents = DatabaseAccess.getUnresolvedEventsForRss();
+
+        //sort by start time
+        Collections.sort(unresolvedEvents);
+
+        String eventUrl = request.getScheme() //"http"
+                + "://"
+                + request.getServerName() //"statuswebsite"
+                + ":"
+                + request.getServerPort(); //"8080"
+
+        for (Event currentEvent : unresolvedEvents)
         {
             entry = new SyndEntryImpl();
             entry.setTitle(currentEvent.getEventTitle());
-            entry.setLink("http://localhost:8080/"+ GlobalValues.getUNRESOLVED_EVENTS_PAGE());
+            entry.setLink(eventUrl + "/geteventpage?eventId=" + currentEvent.getEventId());
+            entry.setUri(eventUrl + "/geteventpage?eventId=" + currentEvent.getEventId());
+
             try
             {
-                LocalDateTime startTimestamp = currentEvent.getStartTimestamp();        
+                LocalDateTime startTimestamp = currentEvent.getStartTimestamp();
                 entry.setPublishedDate(DATE_PARSER.parse(startTimestamp.toString()));
             } catch (ParseException ex)
             {
@@ -115,7 +127,7 @@ public class RssServlet extends HttpServlet
             entry.setDescription(description);
             entries.add(entry);
         }
-        
+
         feed.setEntries(entries);
 
         return feed;

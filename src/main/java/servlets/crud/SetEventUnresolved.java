@@ -42,9 +42,11 @@ public class SetEventUnresolved extends HttpServlet
         log.trace("doPost()");
         String eventJsonString = ServletUtils.getPostRequestJson(request);       
         Event unresolvedEvent = ServletUtils.deserializeEventJson(eventJsonString);
+        unresolvedEvent.setLastUpdatedUnix(ServletUtils.getCurrentUtcSeconds());
+        unresolvedEvent.setLastUpdatedTimestamp(ServletUtils.getCurrentUtcLocalDateTime());
         
         log.debug("doPost() event to be set to unresolved is:"+unresolvedEvent.toString());
-        boolean success = DatabaseAccess.setEventUnresolved(unresolvedEvent.getEventId());
+        boolean success = DatabaseAccess.setEventUnresolved(unresolvedEvent);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         outputObject.setData(unresolvedEvent);

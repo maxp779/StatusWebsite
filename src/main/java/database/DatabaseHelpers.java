@@ -241,21 +241,21 @@ public class DatabaseHelpers
         return eventList;
     }
 
-    protected static long getCurrentUtcSeconds()
-    {
-        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
-        return nowUtc.toEpochSecond();
-    }
-
-    protected static Timestamp getCurrentUtcTimestamp()
-    {
-        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
-        return Timestamp.valueOf(nowUtc.toLocalDateTime());
-    }
-
-    protected static Timestamp getCurrentUtcTimestamp(long unixTimeSeconds)
-    {
-        LocalDateTime ofInstant = LocalDateTime.ofInstant(Instant.ofEpochSecond(unixTimeSeconds), ZoneId.of("UTC"));
-        return Timestamp.valueOf(ofInstant);
-    }
+//    protected static long getCurrentUtcSeconds()
+//    {
+//        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
+//        return nowUtc.toEpochSecond();
+//    }
+//
+//    protected static Timestamp getCurrentUtcTimestamp()
+//    {
+//        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
+//        return Timestamp.valueOf(nowUtc.toLocalDateTime());
+//    }
+//
+//    protected static Timestamp getCurrentUtcTimestamp(long unixTimeSeconds)
+//    {
+//        LocalDateTime ofInstant = LocalDateTime.ofInstant(Instant.ofEpochSecond(unixTimeSeconds), ZoneId.of("UTC"));
+//        return Timestamp.valueOf(ofInstant);
+//    }
 }

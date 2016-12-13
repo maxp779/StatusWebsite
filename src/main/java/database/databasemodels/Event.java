@@ -2,13 +2,15 @@ package database.databasemodels;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.function.ToLongFunction;
 
 /**
  * A class representing an instance of an Event
  * 
  * @author max
  */
-public class Event
+public class Event implements Comparable<Event>
 {
     String userId;
     String eventId;
@@ -160,5 +162,21 @@ public class Event
                 + System.lineSeparator()
                 + " isResolved:" + this.isResolved + "]";
     }
+
+    @Override
+    public int compareTo(Event anEvent)
+    {
+        int isGreater = -1;
+        if(this.startTimeUnix > anEvent.getStartTimeUnix())
+        {
+            isGreater = 1;
+        }
+        else if(this.startTimeUnix == anEvent.getStartTimeUnix())
+        {
+            isGreater = 0;
+        }    
+        return isGreater;
+    }
+
 
 }

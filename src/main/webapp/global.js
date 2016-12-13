@@ -1,7 +1,7 @@
-jQuery(document).ready(function () {
-    var rssUrl = location.hostname + "rss";
-    $('head').append("<link rel='alternate' type='application/rss+xml' title='Status Website RSS feed' href=" + rssUrl + "/>");
-});
+//jQuery(document).ready(function () {
+//    var rssUrl = "/rss";
+//    jQuery('head').append("<link rel='alternate' type='application/rss+xml' title='Status Website RSS feed' href=" + rssUrl + "/>");
+//});
 
 
 var global = function () {
@@ -18,6 +18,20 @@ var global = function () {
     }();
 
     var commonFunctions = function () {
+
+        function setupRssFeed()
+        {
+            //put rss link at top
+            var rssRequestUrl = global.serverApi.requests.rss;
+            jQuery('head').append("<link rel='alternate' type='application/rss+xml' title='Status Website RSS feed' href=" + rssRequestUrl + "/>");
+            
+            //put clickable icon on page
+            var rssLinkElement = document.getElementById("rssLink");
+            if(!isUndefinedOrNull(rssLinkElement))
+            {
+                rssLinkElement.innerHTML = "<a href=" + rssRequestUrl + "><img src='/img/rss.png' style='width:20px;height:20px;'></a>";
+            }
+        }
 
         function getQueryVariable(variable)
         {
@@ -98,7 +112,7 @@ var global = function () {
         {
             document.getElementById("unresolvedEventsNav").href = global.serverApi.requests.getunresolvedeventspage;
             document.getElementById("resolvedEventsNav").href = global.serverApi.requests.getresolvedeventspage;
-            document.getElementById("loginNav").href = global.serverApi.requests.getloginpage;
+            document.getElementById("adminNav").href = global.serverApi.requests.getloginpage;
         }
 
         /**
@@ -120,6 +134,7 @@ var global = function () {
             isUndefinedOrNull: isUndefinedOrNull,
             updateArrayObjects: updateArrayObjects,
             setupNavBar: setupNavBar,
+            setupRssFeed: setupRssFeed,
             setGlobalValuesLocalStorage: setGlobalValuesLocalStorage,
             getComment: getComment,
             convertFormArrayToJson: convertFormArrayToJson,
@@ -139,8 +154,8 @@ var global = function () {
             unresolvedEventsArray: unresolvedEventsArray,
             resolvedEventsArray: resolvedEventsArray,
             currentEventCommentsArray: currentEventCommentsArray,
-            currentEvent:currentEvent,
-            currentComment:currentComment
+            currentEvent: currentEvent,
+            currentComment: currentComment
         };
     }();
 
@@ -340,7 +355,6 @@ var global = function () {
                         {
                             console.log("Error: Failed to fetch API from server, server may be down");
                         }
-
                     },
                     error: function (xhr, status, error)
                     {

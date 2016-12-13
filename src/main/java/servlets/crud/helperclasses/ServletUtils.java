@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -153,5 +154,35 @@ public class ServletUtils
         Event eventObject = gson.fromJson(aJsonString, Event.class);
         return eventObject;
     }
+
+    public static long getCurrentUtcSeconds()
+    {
+        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
+        return nowUtc.toEpochSecond();
+    }
+
+    public static LocalDateTime getCurrentUtcLocalDateTime()
+    {
+        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
+        return nowUtc.toLocalDateTime();
+    }
+    
+    public static LocalDateTime getCurrentUtcLocalDateTime(long unixTimeSeconds)
+    {
+        LocalDateTime nowUtc = LocalDateTime.ofInstant(Instant.ofEpochSecond(unixTimeSeconds), ZoneId.of("UTC"));
+        return nowUtc;
+    }
+
+//    public static Timestamp getCurrentUtcTimestamp()
+//    {
+//        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
+//        return Timestamp.valueOf(nowUtc.toLocalDateTime());
+//    }
+//
+//    public static Timestamp getCurrentUtcTimestamp(long unixTimeSeconds)
+//    {
+//        LocalDateTime ofInstant = LocalDateTime.ofInstant(Instant.ofEpochSecond(unixTimeSeconds), ZoneId.of("UTC"));
+//        return Timestamp.valueOf(ofInstant);
+//    }
 
 }

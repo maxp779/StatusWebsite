@@ -8,6 +8,7 @@ import core.UserObject;
 import database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -50,7 +51,10 @@ public class AddEvent extends HttpServlet
         
         newEvent.setEventId(UUID.randomUUID().toString());
         newEvent.setIsResolved(false);
-        
+        newEvent.setLastUpdatedUnix(ServletUtils.getCurrentUtcSeconds());
+        newEvent.setLastUpdatedTimestamp(ServletUtils.getCurrentUtcLocalDateTime());
+        newEvent.setStartTimestamp(ServletUtils.getCurrentUtcLocalDateTime(newEvent.getStartTimeUnix()));
+
         log.debug("doPost() event to be added:" + newEvent.toString());
 
         boolean success = DatabaseAccess.addEvent(newEvent);

@@ -220,7 +220,13 @@ template: `<ul class="list-group spacer">
                 <h3>{{event.eventTitle}}</h3>    
                     <div v-html="eventStatusCodes[event.eventStatus]" class="spacer"></div> 
                     <p class="list-group-item-text spacer">Start time: {{new Date(event.startTimeUnix*1000).toLocaleString()}}</p>
-                    <p class="list-group-item-text spacer">Last updated: {{new Date(event.lastUpdatedTimeUnix*1000).toLocaleString()}}</p>
+                    <p class="list-group-item-text spacer">Last updated: {{new Date(event.lastUpdatedTimeUnix*1000).toLocaleString()}}</p>       
+                    <div v-if="event.isResolved === true">
+                        <p class="list-group-item-text spacer">Resolved: Yes, the event was resolved at {{new Date(event.resolvedTimeUnix*1000).toLocaleString()}}</p>
+                    </div>
+                    <div v-else>
+                        <p class="list-group-item-text spacer">Resolved: No</p>
+                    </div>
                     <p class="list-group-item-text spacer">Decription: {{event.eventText}}</p>
                 </div>
 </div>`});

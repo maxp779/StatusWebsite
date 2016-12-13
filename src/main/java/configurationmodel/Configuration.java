@@ -8,7 +8,8 @@ package configurationmodel;
 import java.util.Map;
 
 /**
- *
+ * Currently not used, will be used when config info is fetched from a file rather than hardcoded
+ * 
  * @author max
  */
 public class Configuration

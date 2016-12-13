@@ -14,7 +14,7 @@ public class Comment
     String commentId;
     String commentText;
     long postTimeUnix;
-    Timestamp postTimestamp;
+    LocalDateTime postTimestamp;
 
     public long getPostTimeUnix()
     {
@@ -26,12 +26,12 @@ public class Comment
         this.postTimeUnix = postTimeUnix;
     }
 
-    public Timestamp getPostTimestamp()
+    public LocalDateTime getPostTimestamp()
     {
         return postTimestamp;
     }
 
-    public void setPostTimestamp(Timestamp postTimestamp)
+    public void setPostTimestamp(LocalDateTime postTimestamp)
     {
         this.postTimestamp = postTimestamp;
     }

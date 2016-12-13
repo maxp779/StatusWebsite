@@ -28,7 +28,7 @@ public class DeleteComment extends HttpServlet
 
     private static final Logger log = LoggerFactory.getLogger(DeleteComment.class);
 
-/**
+    /**
      * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
@@ -41,21 +41,27 @@ public class DeleteComment extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String commentIdJson = ServletUtils.getPostRequestJson(request);       
+        String commentIdJson = ServletUtils.getPostRequestJson(request);
         Comment commentToDelete = ServletUtils.deserializeCommentJson(commentIdJson);
-        
-        log.debug("doPost() comment to be deleted:"+commentToDelete.toString());
 
-        boolean success = DatabaseAccess.deleteComment(commentToDelete);
+        log.debug("doPost() comment to be deleted:" + commentToDelete.toString());
+
+        boolean deleteCommentSuccess = DatabaseAccess.deleteComment(commentToDelete);
+        boolean updateLastUpdatedTimeSuccess = DatabaseAccess.setEventLastUpdatedTime(commentToDelete.getEventId()
+        ,ServletUtils.getCurrentUtcSeconds()
+        ,ServletUtils.getCurrentUtcLocalDateTime());
+
         StandardOutputObject outputObject = new StandardOutputObject();
-        outputObject.setSuccess(success);
-        outputObject.setData(commentToDelete);
-        if (success)
+        if (deleteCommentSuccess && updateLastUpdatedTimeSuccess)
         {
             log.info("comment deleted successfully");
+            log.info("event last updated time updated successfully");
+            outputObject.setSuccess(true);
+            outputObject.setData(commentToDelete);
             writeOutput(response, outputObject);
         } else
         {
+            outputObject.setSuccess(false);
             outputObject.setErrorCode(ErrorCodes.DELETE_COMMENT_FAILED);
             writeOutput(response, outputObject);
         }

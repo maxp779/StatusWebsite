@@ -42,10 +42,14 @@ public class SetEventResolved extends HttpServlet
     {
         log.trace("doPost()");
         String eventJsonString = ServletUtils.getPostRequestJson(request);       
-        Event resolvedEvent = ServletUtils.deserializeEventJson(eventJsonString);
+        Event resolvedEvent = ServletUtils.deserializeEventJson(eventJsonString);    
+        resolvedEvent.setResolvedTimeUnix(ServletUtils.getCurrentUtcSeconds());
+        resolvedEvent.setResolvedTimestamp(ServletUtils.getCurrentUtcLocalDateTime());
+        resolvedEvent.setLastUpdatedUnix(ServletUtils.getCurrentUtcSeconds());
+        resolvedEvent.setLastUpdatedTimestamp(ServletUtils.getCurrentUtcLocalDateTime());
         
         log.debug("doPost() event to be set to resolved is:"+resolvedEvent.toString());
-        boolean success = DatabaseAccess.setEventResolved(resolvedEvent.getEventId());
+        boolean success = DatabaseAccess.setEventResolved(resolvedEvent);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         outputObject.setData(resolvedEvent);

@@ -1,11 +1,12 @@
 jQuery(document).ready(function () {
     global.ajaxFunctions.getServerApi(function () {
         global.commonFunctions.setupNavBar();
+        global.commonFunctions.setupRssFeed();
         vueFunctions.loadDatepickers(function () {
             resolvedEvents.setupDatepickers(function () {
 
-                var from = $('#datepicker1').data("DateTimePicker").date();
-                var to = $('#datepicker2').data("DateTimePicker").date();
+                var from = jQuery('#datepicker1').data("DateTimePicker").date();
+                var to = jQuery('#datepicker2').data("DateTimePicker").date();
                 var fromUnix = from.unix(); //UTC unix
                 var toUnix = to.unix();
 
@@ -23,8 +24,8 @@ var resolvedEvents = function () {
     function setupEvents()
     {
         jQuery("#getEventsButton").on("click", function (e) {
-            var from = $('#datepicker1').data("DateTimePicker").date();
-            var to = $('#datepicker2').data("DateTimePicker").date();
+            var from = jQuery('#datepicker1').data("DateTimePicker").date();
+            var to = jQuery('#datepicker2').data("DateTimePicker").date();
             var fromUnix = from.unix(); //UTC unix
             var toUnix = to.unix();
             global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix);

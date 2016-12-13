@@ -42,27 +42,37 @@ public class AddComment extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost()");
-        String commentJsonString = ServletUtils.getPostRequestJson(request);       
+        String commentJsonString = ServletUtils.getPostRequestJson(request);
         Comment newComment = ServletUtils.deserializeCommentJson(commentJsonString);
-        UserObject currentUser = ServletUtils.getCurrentUser(request);        
+        UserObject currentUser = ServletUtils.getCurrentUser(request);
         newComment.setUserId(currentUser.getUsername());
         newComment.setCommentId(UUID.randomUUID().toString());
-        log.debug("doPost() comment to be added:"+newComment.toString());
+        newComment.setPostTimeUnix(ServletUtils.getCurrentUtcSeconds());
+        newComment.setPostTimestamp(ServletUtils.getCurrentUtcLocalDateTime());
+        log.debug("doPost() comment to be added:" + newComment.toString());
 
-        boolean success = DatabaseAccess.addComment(newComment);
+        boolean addCommentSuccess = DatabaseAccess.addComment(newComment);
+        boolean updateLastUpdatedTimeSuccess = DatabaseAccess.setEventLastUpdatedTime(newComment.getEventId()
+                ,ServletUtils.getCurrentUtcSeconds()
+        ,ServletUtils.getCurrentUtcLocalDateTime());
+
         StandardOutputObject outputObject = new StandardOutputObject();
-        outputObject.setSuccess(success);
-        
-        outputObject.setData(newComment);
-        if (success)
+
+        if (addCommentSuccess && updateLastUpdatedTimeSuccess)
         {
             log.info("comment added successfully");
+            log.info("event last updated time updated successfully");
+            outputObject.setSuccess(true);
+            outputObject.setData(newComment);
             writeOutput(response, outputObject);
+
         } else
         {
+            outputObject.setSuccess(false);
             outputObject.setErrorCode(ErrorCodes.ADD_COMMENT_FAILED);
             writeOutput(response, outputObject);
         }
+
     }
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject output)

@@ -1,11 +1,13 @@
 jQuery(document).ready(function () {
     global.ajaxFunctions.getServerApi(function () {
+        global.commonFunctions.setupNavBar();
+        global.commonFunctions.setupRssFeed();
         vueFunctions.loadDatepickers(function () {
             admin.setupDatepickers(function () {
                 global.ajaxFunctions.getUnresolvedEvents(function () {
 
-                    var from = $('#datepicker1').data("DateTimePicker").date();
-                    var to = $('#datepicker2').data("DateTimePicker").date();
+                    var from = jQuery('#datepicker1').data("DateTimePicker").date();
+                    var to = jQuery('#datepicker2').data("DateTimePicker").date();
                     var fromUnix = from.unix(); //UTC unix
                     var toUnix = to.unix();
 
@@ -25,8 +27,8 @@ var admin = function () {
     var ajaxFunctions = function () {
         function getAdminResolvedEventsList(callback)
         {
-            var from = $('#datepicker1').data("DateTimePicker").date();
-            var to = $('#datepicker2').data("DateTimePicker").date();
+            var from = jQuery('#datepicker1').data("DateTimePicker").date();
+            var to = jQuery('#datepicker2').data("DateTimePicker").date();
 
             var toServer = {};
             toServer.from = from.unix(); //UTC unix
@@ -42,7 +44,6 @@ var admin = function () {
                 success: function (returnObject)
                 {
                     document.getElementById("getEventsButton").innerHTML = "Get events";
-                    console.log(returnObject);
                     if (returnObject.success === true)
                     {
                         global.setGlobalValues.setResolvedEventsArray(returnObject.data);
@@ -75,8 +76,6 @@ var admin = function () {
                 dataType: "json",
                 success: function (returnObject)
                 {
-                    console.log("deleteEvent");
-                    console.log(returnObject);
                     if (returnObject.success === true)
                     {
                         global.ajaxFunctions.getUnresolvedEvents();
@@ -129,8 +128,6 @@ var admin = function () {
                 dataType: "json",
                 success: function (returnObject)
                 {
-                    console.log("createNewEvent");
-                    console.log(returnObject);
                     if (returnObject.success === true)
                     {
                         //global.globalValues.adminEventsArray.push(returnObject.data);
@@ -235,8 +232,8 @@ var admin = function () {
         function setupEvents()
         {
             jQuery(document).on("click", "#getEventsButton", function (e) {
-                var from = $('#datepicker1').data("DateTimePicker").date();
-                var to = $('#datepicker2').data("DateTimePicker").date();
+                var from = jQuery('#datepicker1').data("DateTimePicker").date();
+                var to = jQuery('#datepicker2').data("DateTimePicker").date();
                 var fromUnix = from.unix(); //UTC unix
                 var toUnix = to.unix();
                 global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix);
@@ -273,18 +270,18 @@ var admin = function () {
 
             jQuery("#createEventForm").submit(function (event) {
                 event.preventDefault(); //this prevents the default actions of the form           
-                var formData = $("#createEventForm").serializeArray();
+                var formData = jQuery("#createEventForm").serializeArray();
                 var newEvent = global.commonFunctions.convertFormArrayToJson(formData);
 
-                var startDateMoment = $('#createEventDatepicker').data("DateTimePicker").date();
+                var startDateMoment = jQuery('#createEventDatepicker').data("DateTimePicker").date();
                 var startTimeUnix = startDateMoment.unix();
                 newEvent.startTimeUnix = startTimeUnix;
                 ajaxFunctions.createNewEvent(newEvent);
             });
 
-            $(document).on("click", "#getEventsButton", function (e) {
-                var from = $('#datepicker1').data("DateTimePicker").date();
-                var to = $('#datepicker2').data("DateTimePicker").date();
+            jQuery(document).on("click", "#getEventsButton", function (e) {
+                var from = jQuery('#datepicker1').data("DateTimePicker").date();
+                var to = jQuery('#datepicker2').data("DateTimePicker").date();
                 var fromUnix = from.unix(); //UTC unix
                 var toUnix = to.unix();
                 global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix);
