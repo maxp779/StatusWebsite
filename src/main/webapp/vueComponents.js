@@ -6,7 +6,7 @@ template: `<ul class="list-group spacer">
         <li v-for="event in unresolvedEventsArray" class="list-group-item" v-bind:key="event.eventId">
             <div class="row">
                 <div class="col-sm-12">
-                    <a href="#" v-bind:data-event-id="event.eventId" class="eventLink">
+                    <a v-bind:href='serverApi.requests.geteventpage + "?eventId=" + event.eventId' v-bind:data-event-id="event.eventId">
                         <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
                     </a>       
                     <div v-html="eventStatusCodes[event.eventStatus]"></div> 
@@ -32,7 +32,7 @@ template: `<ul class="list-group spacer">
         <li v-for="event in resolvedEventsArray" class="list-group-item" v-bind:key="event.eventId">
             <div class="row">
                 <div class="col-sm-12">
-                    <a href="#" v-bind:data-event-id="event.eventId" class="eventLink">
+                    <a v-bind:href='serverApi.requests.geteventpage + "?eventId=" + event.eventId' v-bind:data-event-id="event.eventId">
                         <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
                     </a>
                     <div v-html="eventStatusCodes[event.eventStatus]"></div> 
@@ -87,7 +87,7 @@ template: `<ul class="list-group spacer">
         <li v-for="event in adminUnresolvedEventsArray" class="list-group-item" v-bind:key="event.eventId">
             <div class="row">
                 <div class="col-sm-12">
-                    <a href="#" v-bind:data-event-id="event.eventId" class="eventLink">
+                    <a v-bind:href='serverApi.requests.getadmineventpage + "?eventId=" + event.eventId' v-bind:data-event-id="event.eventId">
                         <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
                     </a>
                     <div v-html="eventStatusCodes[event.eventStatus]"></div>
@@ -115,7 +115,7 @@ template: `<ul class="list-group spacer">
         <li v-for="event in adminResolvedEventsArray" class="list-group-item" v-bind:key="event.eventId">
             <div class="row">
                 <div class="col-sm-12">
-                    <a href="#" v-bind:data-event-id="event.eventId" class="eventLink">
+                    <a v-bind:href='serverApi.requests.getadmineventpage + "?eventId=" + event.eventId' v-bind:data-event-id="event.eventId">
                         <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
                     </a>
                     <div v-html="eventStatusCodes[event.eventStatus]"></div> 

@@ -273,13 +273,6 @@ var admin = function () {
                 ajaxFunctions.setEventToUnresolved(eventId);
             });
 
-            jQuery(document).on("click", ".eventLink", function () {
-                var clickedElement = this;
-                var eventId = clickedElement.dataset.eventId;
-                var url = global.serverApi.requests.getadmineventpage;
-                window.location = url + "?eventId=" + eventId;
-            });
-
             jQuery("#createEventForm").submit(function (event) {
                 event.preventDefault(); //this prevents the default actions of the form           
                 var formData = jQuery("#createEventForm").serializeArray();

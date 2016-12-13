@@ -67,7 +67,8 @@ var vueFunctions = function () {
             replace: false,
             data: {
                 unresolvedEventsArray: global.globalValues.unresolvedEventsArray,
-                eventStatusCodes: vueComponents.eventStatusCodes
+                eventStatusCodes: vueComponents.eventStatusCodes,
+                serverApi : global.serverApi
             }
         });
         // mount it on an element
@@ -86,7 +87,8 @@ var vueFunctions = function () {
             replace: false,
             data: {
                 resolvedEventsArray: global.globalValues.resolvedEventsArray,
-                eventStatusCodes: vueComponents.eventStatusCodes
+                eventStatusCodes: vueComponents.eventStatusCodes,
+                serverApi : global.serverApi
             }
         });
         // mount it on an element
@@ -104,7 +106,9 @@ var vueFunctions = function () {
             replace: false,
             data: {
                 adminUnresolvedEventsArray: global.globalValues.unresolvedEventsArray,
-                eventStatusCodes: vueComponents.eventStatusCodes
+                eventStatusCodes: vueComponents.eventStatusCodes,
+                serverApi : global.serverApi
+
             }
         });
 
@@ -116,7 +120,8 @@ var vueFunctions = function () {
             replace: false,
             data: {
                 adminResolvedEventsArray: global.globalValues.resolvedEventsArray,
-                eventStatusCodes: vueComponents.eventStatusCodes
+                eventStatusCodes: vueComponents.eventStatusCodes,
+                serverApi : global.serverApi
             }
         });
         adminResolvedEventsList.$mount('#adminResolvedEvents');

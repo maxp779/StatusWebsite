@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
  */
 public class Comment
 {
-    String userId;
-    String eventId;
-    String commentId;
-    String commentText;
-    long postTimeUnix;
-    LocalDateTime postTimestamp;
+    private String userId;
+    private String eventId;
+    private String commentId;
+    private String commentText;
+    private long postTimeUnix;
+    private LocalDateTime postTimestamp;
 
     public long getPostTimeUnix()
     {

@@ -12,18 +12,18 @@ import java.util.function.ToLongFunction;
  */
 public class Event implements Comparable<Event>
 {
-    String userId;
-    String eventId;
-    String eventText;
-    boolean isResolved;
-    String eventStatus;
-    String eventTitle;
-    long startTimeUnix;
-    LocalDateTime startTimestamp;
-    long lastUpdatedTimeUnix;
-    LocalDateTime lastUpdatedTimestamp;
-    long resolvedTimeUnix;
-    LocalDateTime resolvedTimestamp;
+    private String userId;
+    private String eventId;
+    private String eventText;
+    private boolean isResolved;
+    private String eventStatus;
+    private String eventTitle;
+    private long startTimeUnix;
+    private LocalDateTime startTimestamp;
+    private long lastUpdatedTimeUnix;
+    private LocalDateTime lastUpdatedTimestamp;
+    private long resolvedTimeUnix;
+    private LocalDateTime resolvedTimestamp;
 
     public String getUserId()
     {
