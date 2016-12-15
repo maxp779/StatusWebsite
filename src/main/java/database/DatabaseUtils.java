@@ -58,7 +58,6 @@ public class DatabaseUtils
         return connection;
     }
     
-    @Deprecated
     protected static void loadDatabaseDriver()
     {
         log.trace("loadDatabaseDriver()");

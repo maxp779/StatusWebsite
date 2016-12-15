@@ -6,5 +6,5 @@
     </resource-env-ref>
     <welcome-file-list>
         <welcome-file>unresolvedEvents.html</welcome-file>
-    </welcome-file-list>  
+    </welcome-file-list>
 </web-app>

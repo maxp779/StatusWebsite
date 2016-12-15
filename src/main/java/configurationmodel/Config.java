@@ -3,12 +3,13 @@ package configurationmodel;
 import java.util.Map;
 
 /**
- * Currently not used, will be used when user info is fetched from file rather than hardcoded
+ * Object to store usernames and passwords for administrators.
+ * 
  * @author max
  */
-public class Users
+public class Config
 {
-    Map<String, String> Administrators;
+    private Map<String, String> Administrators;
 
     public Map<String, String> getAdministrators()
     {

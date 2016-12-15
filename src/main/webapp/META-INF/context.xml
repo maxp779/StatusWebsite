@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="">
-  <Resource driverClassName="com.mysql.cj.jdbc.Driver" maxActive="10" maxIdle="5" maxWait="1000" name="jdbc/db" password="c86addf8-849d-4603-ba63-baa5e1f2b5c9" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/status_website" username="status_website_user"/>
+  <Resource driverClassName="com.mysql.cj.jdbc.Driver" name="jdbc/db" auth="Container" password="c86addf8-849d-4603-ba63-baa5e1f2b5c9" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/status_website" username="status_website_user"/>
 </Context>

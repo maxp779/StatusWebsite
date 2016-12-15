@@ -1,17 +1,12 @@
 package session;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import configurationmodel.ApplicationConfig;
+import configurationmodel.Config;
 import core.ErrorCodes;
 import core.GlobalValues;
 import servlets.crud.helperclasses.ServletUtils;
 import servlets.crud.helperclasses.StandardOutputObject;
 import core.UserObject;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -48,33 +43,14 @@ public class Login extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException
-    {        
-//        Gson gson = new Gson();
-//        //AppSettings response = gson.fromJson(appsettings.json, Response.class);
-//        String fileName ="configuration.json";
-//        
-//        
-//        File file=new File("configuration.json");
-//        String path = file.toString();
-//        // Read from File to String
-//        JsonObject jsonObject = new JsonObject();
-//        
-//        try {
-//            JsonParser parser = new JsonParser();
-//            JsonElement jsonElement = parser.parse(new FileReader(fileName));
-//            jsonObject = jsonElement.getAsJsonObject();
-//        } catch (FileNotFoundException e) {
-//           
-//        } catch (IOException ioe){
-//        
-//        }
-        
+    {               
         log.trace("doPost()");
         String loginDetailsJson = ServletUtils.getPostRequestJson(request);
-        Map<String, String> loginDetailsMap = ServletUtils.convertJsonStringToMap(loginDetailsJson);    
+        Map<String, String> loginDetailsMap = ServletUtils.convertJsonStringToMap(loginDetailsJson);     
         String username = loginDetailsMap.get("username");
         
-        Map<String,String> userMap = GlobalValues.getUSERS();       
+        Config currentConfig = ApplicationConfig.getCurrentConfig();
+        Map<String,String> userMap = currentConfig.getAdministrators();
         
         StandardOutputObject outputObject = new StandardOutputObject();
         if (!userMap.containsKey(username))
@@ -102,7 +78,6 @@ public class Login extends HttpServlet
             outputObject.setSuccess(true);
             writeOutput(response, outputObject);
         }
-
     }
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)

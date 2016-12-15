@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rss.UpdateRssFeed;
 
 /**
  * This class contains all methods for accessing the database, most of these have
@@ -57,6 +56,8 @@ public class DatabaseAccess
      * considered to have been updated and this method is called.
      *
      * @param eventId the event to be updated
+     * @param currentUtcSecond
+     * @param currentUtcLocalDateTime
      * @return boolean indicating success
      */
     public static boolean setEventLastUpdatedTime(String eventId, long currentUtcSecond, LocalDateTime currentUtcLocalDateTime)
@@ -70,7 +71,6 @@ public class DatabaseAccess
         {
             setEventLastUpdatedTimeStatement.setLong(1, currentUtcSecond);
             setEventLastUpdatedTimeStatement.setTimestamp(2, Timestamp.valueOf(currentUtcLocalDateTime));
-
             setEventLastUpdatedTimeStatement.setString(3, eventId);
 
             queryResult = setEventLastUpdatedTimeStatement.executeUpdate();
@@ -110,7 +110,6 @@ public class DatabaseAccess
         {
             log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
         }
-        //UpdateRssFeed.updateFeed();
         return queryResult != 0;
     }
 
@@ -130,7 +129,6 @@ public class DatabaseAccess
         {
             log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
         }
-        //boolean updateLinkedEvent = setEventLastUpdatedTime(aComment.getEventId());
         return queryResult != 0;
     }
 
@@ -196,7 +194,6 @@ public class DatabaseAccess
         {
             log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
         }
-        //UpdateRssFeed.updateFeed();
         return queryResult != 0;
     }
 
@@ -255,47 +252,6 @@ public class DatabaseAccess
         return queryResult != 0;
     }
 
-//    public static boolean updateEventText(Event anEvent)
-//    {
-//        log.trace("updateEventText()");
-//        String updateEventTextSql = "UPDATE events SET event_text = ? WHERE event_id = ?";
-//
-//        int queryResult = 0;
-//        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-//                PreparedStatement updateEventTextStatement = databaseConnection.prepareStatement(updateEventTextSql);)
-//        {
-//            updateEventTextStatement.setString(1, anEvent.getEventText());
-//            updateEventTextStatement.setString(2, anEvent.getEventId());
-//
-//            queryResult = updateEventTextStatement.executeUpdate();
-//
-//        } catch (SQLException ex)
-//        {
-//            log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
-//        }
-//        return queryResult != 0;
-//    }
-//
-//    public static boolean updateEventTitle(Event anEvent)
-//    {
-//        log.trace("updateEventTitle()");
-//        String updateEventTitleSql = "UPDATE events SET event_title = ? WHERE event_id = ?";
-//
-//        int queryResult = 0;
-//        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-//                PreparedStatement updateEventTitleStatement = databaseConnection.prepareStatement(updateEventTitleSql);)
-//        {
-//            updateEventTitleStatement.setString(1, anEvent.getTitle());
-//            updateEventTitleStatement.setString(2, anEvent.getEventId());
-//
-//            queryResult = updateEventTitleStatement.executeUpdate();
-//
-//        } catch (SQLException ex)
-//        {
-//            log.error(ErrorCodes.DATABASE_ERROR.toString(), ex);
-//        }
-//        return queryResult != 0;
-//    }
     public static List getEvents(long fromDate, long toDate)
     {
         log.trace("getEvents()");
@@ -386,7 +342,7 @@ public class DatabaseAccess
         //where is_resolved is true
         //AND where resolvedTimeUnix is less than the fromDate 
         //AND where resolvedTimeUnix is greater than the toDate
-        String getResolvedEventsSql = "SELECT * FROM events WHERE is_resolved = ? AND resolved_time_unix <=? AND resolved_time_unix >=?";
+        String getResolvedEventsSql = "SELECT * FROM events WHERE is_resolved = ? AND resolved_time_unix >=? AND resolved_time_unix <=?";
 
         List resultSetList = null;
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();

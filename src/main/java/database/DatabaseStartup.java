@@ -25,10 +25,8 @@ public class DatabaseStartup implements ServletContextListener
         log.trace("contextInitialized()");
         System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
 
-        //DatabaseUtils.loadDatabaseDriver();
+        DatabaseUtils.loadDatabaseDriver();
         DatabaseUtils.setupDatasource();
-        
-        //PopulateDatabase.populateDatabase();
     }
 
     @Override

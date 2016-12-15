@@ -94,43 +94,56 @@ public class RssServlet extends HttpServlet
         SyndEntry entry;
         SyndContent description;
 
-        //get unresolved events
-        List<Event> unresolvedEvents = DatabaseAccess.getUnresolvedEventsForRss();
+        List<Event> unresolvedEvents = getUnresolvedEvents();
 
-        //sort by start time
-        Collections.sort(unresolvedEvents);
-
-        String eventUrl = request.getScheme() //"http"
-                + "://"
-                + request.getServerName() //"statuswebsite"
-                + ":"
-                + request.getServerPort(); //"8080"
-
-        for (Event currentEvent : unresolvedEvents)
+        if (unresolvedEvents != null)
         {
-            entry = new SyndEntryImpl();
-            entry.setTitle(currentEvent.getEventTitle());
-            entry.setLink(eventUrl + "/geteventpage?eventId=" + currentEvent.getEventId());
-            entry.setUri(eventUrl + "/geteventpage?eventId=" + currentEvent.getEventId());
+            String eventUrl = request.getScheme() //"http"
+                    + "://"
+                    + request.getServerName() //"statuswebsite"
+                    + ":"
+                    + request.getServerPort(); //"8080"
 
-            try
+            for (Event currentEvent : unresolvedEvents)
             {
-                LocalDateTime startTimestamp = currentEvent.getStartTimestamp();
-                entry.setPublishedDate(DATE_PARSER.parse(startTimestamp.toString()));
-            } catch (ParseException ex)
-            {
-                // IT CANNOT HAPPEN WITH THIS SAMPLE
+                entry = new SyndEntryImpl();
+                entry.setTitle(currentEvent.getEventTitle());
+                entry.setLink(eventUrl + "/geteventpage?eventId=" + currentEvent.getEventId());
+                entry.setUri(eventUrl + "/geteventpage?eventId=" + currentEvent.getEventId());
+
+                try
+                {
+                    LocalDateTime startTimestamp = currentEvent.getStartTimestamp();
+                    entry.setPublishedDate(DATE_PARSER.parse(startTimestamp.toString()));
+                } catch (ParseException ex)
+                {
+                    // IT CANNOT HAPPEN WITH THIS SAMPLE
+                }
+                description = new SyndContentImpl();
+                description.setType("text/plain");
+                description.setValue(currentEvent.getEventText());
+                entry.setDescription(description);
+                entries.add(entry);
             }
-            description = new SyndContentImpl();
-            description.setType("text/plain");
-            description.setValue(currentEvent.getEventText());
-            entry.setDescription(description);
-            entries.add(entry);
+        }
+        else
+        {
+            //unresolvedEvents was null, no entries to add
         }
 
         feed.setEntries(entries);
 
         return feed;
+    }
+
+    private List<Event> getUnresolvedEvents()
+    {
+        List<Event> output;
+        output = DatabaseAccess.getUnresolvedEventsForRss();
+
+        //sort by start time
+        Collections.sort(output);
+        return output;
     }
 
     /**

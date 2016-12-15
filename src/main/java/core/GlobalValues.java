@@ -16,13 +16,13 @@ import java.util.Map;
 public class GlobalValues
 {
     //login credentials
-    private static final Map<String, String> USERS;
-    static {
-        Map<String, String> aMap = new HashMap<>();
-        aMap.put("maxpower", "123");
-        aMap.put("testuser", "123");
-        USERS = Collections.unmodifiableMap(aMap);
-    }
+//    private static final Map<String, String> USERS;
+//    static {
+//        Map<String, String> aMap = new HashMap<>();
+//        aMap.put("maxpower", "123");
+//        aMap.put("testuser", "123");
+//        USERS = Collections.unmodifiableMap(aMap);
+//    }
     
     //urls
     private static final String LOGIN_PAGE_URL = "/login.html";
@@ -40,9 +40,6 @@ public class GlobalValues
        
     //misc values
     private static final int SESSION_TIMEOUT_VALUE = 3600; //0 or less will never timeout, this value is in seconds   
-
-    //database values
-    private static final String DATABASE_URL = "server=127.0.0.1; uid=status_website_user; pwd=c86addf8-849d-4603-ba63-baa5e1f2b5c9; database=status_website_ef;";
 
     //requests which require authentication i.e user needs to be logged in to do this stuff
     private static final String[] AUTH_RESOURCES =
@@ -84,10 +81,6 @@ public class GlobalValues
     {
         return ERROR_PAGE_URL;
     }
-    
-    public static Map<String, String> getUSERS() {
-        return USERS;
-    }
 
     public static Request getLOGIN_PAGE_REQUEST() {
         return LOGIN_PAGE_REQUEST;
@@ -95,10 +88,6 @@ public class GlobalValues
 
     public static int getSESSION_TIMEOUT_VALUE() {
         return SESSION_TIMEOUT_VALUE;
-    }
-
-    public static String getDATABASE_URL() {
-        return DATABASE_URL;
     }
 
     public static String[] getAUTH_RESOURCES() {

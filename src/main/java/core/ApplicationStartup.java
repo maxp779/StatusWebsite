@@ -1,5 +1,6 @@
 package core;
 
+import configurationmodel.ApplicationConfig;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -29,7 +30,7 @@ public class ApplicationStartup implements ServletContextListener
          */
         System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
         log.trace("contextInitialized()");
-
+        ApplicationConfig.setupConfig();
         ServerApi.setupServerAPI();
     }
 

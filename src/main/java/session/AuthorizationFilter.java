@@ -1,5 +1,6 @@
-package core;
+package session;
 
+import core.GlobalValues;
 import session.SessionManager;
 import java.io.IOException;
 import java.io.PrintStream;

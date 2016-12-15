@@ -319,25 +319,26 @@ var admin = function () {
         });
 
         //prevents days in the future being selected
-        jQuery("#datepicker2").on("dp.change", function (e) {
-            jQuery('#datepicker1').data("DateTimePicker").minDate(e.date);
-        });
         jQuery("#datepicker1").on("dp.change", function (e) {
-            jQuery('#datepicker2').data("DateTimePicker").maxDate(e.date);
+            jQuery('#datepicker2').data("DateTimePicker").minDate(e.date);
+        });
+        jQuery("#datepicker2").on("dp.change", function (e) {
+            jQuery('#datepicker1').data("DateTimePicker").maxDate(e.date);
         });
 
-        //one day in the future, this eliminates weirdness with now showing events
-        //that were just resolved
-        var date = new Date();
-        date.setDate(date.getDate() + 1);
-        jQuery('#datepicker1').data("DateTimePicker").defaultDate(date);
-
-        //to one month in the past
+        //from one month in the past
         var oneMonthAgo = new Date();
         oneMonthAgo.setMonth((new Date().getMonth() - 1));
-        jQuery('#datepicker2').data("DateTimePicker").defaultDate(oneMonthAgo);
+        jQuery('#datepicker1').data("DateTimePicker").defaultDate(oneMonthAgo);
+        jQuery('#datepicker1').data("DateTimePicker").viewDate(oneMonthAgo);
+        
+        //to the end of today on the current date
+        var endOfDay = new Date();
+        endOfDay.setHours(23,59,59,999);
+        jQuery('#datepicker2').data("DateTimePicker").defaultDate(endOfDay);
 
         jQuery('#datepicker1').data("DateTimePicker").showTodayButton(true);
+        jQuery('#datepicker2').data("DateTimePicker").showTodayButton(true);
 
         //datepicker for the create new event form
         jQuery('#createEventDatepicker').datetimepicker({
