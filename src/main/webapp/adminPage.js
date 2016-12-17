@@ -331,10 +331,10 @@ var admin = function () {
         oneMonthAgo.setMonth((new Date().getMonth() - 1));
         jQuery('#datepicker1').data("DateTimePicker").defaultDate(oneMonthAgo);
         jQuery('#datepicker1').data("DateTimePicker").viewDate(oneMonthAgo);
-        
+
         //to the end of today on the current date
         var endOfDay = new Date();
-        endOfDay.setHours(23,59,59,999);
+        endOfDay.setHours(23, 59, 59, 999);
         jQuery('#datepicker2').data("DateTimePicker").defaultDate(endOfDay);
 
         jQuery('#datepicker1').data("DateTimePicker").showTodayButton(true);
@@ -342,7 +342,8 @@ var admin = function () {
 
         //datepicker for the create new event form
         jQuery('#createEventDatepicker').datetimepicker({
-            viewMode: 'days'
+            viewMode: 'days',
+            format: 'DD/MM/YYYY h:mm A'
         });
 
         jQuery('#createEventDatepicker').data("DateTimePicker").defaultDate(new Date());

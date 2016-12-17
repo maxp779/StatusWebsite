@@ -226,7 +226,8 @@ var adminEventPage = function () {
     function populateUpdateEventForm(callback)
     {
         jQuery('#updateEventDatepicker').datetimepicker({
-            viewMode: 'days'
+            viewMode: 'days',
+            format: 'DD/MM/YYYY h:mm A'
         });
         jQuery('#updateEventDatepicker').data("DateTimePicker").showTodayButton(true);
 

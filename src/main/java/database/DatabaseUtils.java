@@ -29,7 +29,7 @@ public class DatabaseUtils
      */
     protected static void setupDatasource()
     {
-        String jndiname = "jdbc/db";
+        String jndiname = "jdbc/status_website";
         try
         {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/" + jndiname);
