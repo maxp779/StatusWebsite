@@ -1,6 +1,10 @@
 jQuery(document).ready(function () {
     global.ajaxFunctions.getServerApi(function () {
-        global.commonFunctions.setupNavBar();
+        global.ajaxFunctions.getLoginState(function () {
+            vueFunctions.loadNavBarComponent(function () {
+                jQuery("#loginNav").addClass("active");
+            });
+        });
         global.commonFunctions.setupRssFeed();
     });
     login.autologin();
@@ -65,6 +69,6 @@ var login = function () {
     return{
         loginRequest: loginRequest,
         autologin: autologin,
-        setupEvents:setupEvents
+        setupEvents: setupEvents
     };
 }();

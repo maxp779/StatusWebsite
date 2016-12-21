@@ -1,7 +1,10 @@
 jQuery(document).ready(function () {
     global.ajaxFunctions.getServerApi(function () {
-        global.commonFunctions.setupNavBar();
-        global.commonFunctions.setupRssFeed();
+        global.ajaxFunctions.getLoginState(function () {
+            vueFunctions.loadNavBarComponent(function () {
+                jQuery("#adminNav").addClass("active");
+            });
+        });
         vueFunctions.loadDatepickers(function () {
             admin.setupDatepickers(function () {
                 global.ajaxFunctions.getUnresolvedEvents(function () {
@@ -10,10 +13,10 @@ jQuery(document).ready(function () {
                     var to = jQuery('#datepicker2').data("DateTimePicker").date();
                     var fromUnix = from.unix(); //UTC unix
                     var toUnix = to.unix();
-
                     global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix, function () {
                         vueFunctions.loadMainAdminComponent(function () {
                             admin.events.setupEvents();
+                            global.commonFunctions.setupRssFeed();
                         });
                     });
                 });
@@ -21,6 +24,7 @@ jQuery(document).ready(function () {
         });
     });
 });
+
 
 var admin = function () {
 
@@ -34,7 +38,6 @@ var admin = function () {
             toServer.from = from.unix(); //UTC unix
             toServer.to = to.unix();
             document.getElementById("getEventsButton").innerHTML = "<span class='glyphicon glyphicon-refresh spinning'></span> Loading...";
-//        setTimeout(function(){document.getElementById("getEventsButton").innerHTML = "Get events";}, 1000);    
             jQuery.ajax({
                 url: global.serverApi.requests.getresolvedevents,
                 type: "get",
@@ -50,7 +53,6 @@ var admin = function () {
                     } else
                     {
                         global.setGlobalValues.setResolvedEventsArray([]);
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-info\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
                     }
                     if (callback)
                     {
@@ -87,34 +89,11 @@ var admin = function () {
                         }
                     } else
                     {
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-info\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
+                        console.log("deleteEvent() failed");
                     }
                     if (callback)
                     {
                         callback();
-                    }
-                },
-                error: function (xhr, status, error)
-                {
-                    console.log("Ajax request failed:" + error.toString());
-                }
-            });
-        }
-
-        function logout()
-        {
-            jQuery.ajax({
-                url: global.serverApi.requests.logout,
-                type: "post",
-                dataType: "json",
-                success: function (returnObject)
-                {
-                    if (returnObject.success === true)
-                    {
-                        window.location.href = returnObject.data;
-                    } else
-                    {
-                        console.log("Error:" + global.serverApi.errorCodes[returnObject.errorCode]);
                     }
                 },
                 error: function (xhr, status, error)
@@ -126,6 +105,7 @@ var admin = function () {
 
         function createNewEvent(event, callback)
         {
+            var feedbackElement = document.getElementById("createNewEventFeedback");
             jQuery.ajax({
                 url: global.serverApi.requests.addevent,
                 type: "post",
@@ -136,14 +116,12 @@ var admin = function () {
                 {
                     if (returnObject.success === true)
                     {
-                        //global.globalValues.adminEventsArray.push(returnObject.data);
-
                         global.ajaxFunctions.getUnresolvedEvents();
-
-                        //  getEvent(returnObject.data);
+                        document.getElementById("createEventForm").reset();
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.createEventSuccess);
                     } else
                     {
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-info\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.createEventFailed);
                     }
                     if (callback)
                     {
@@ -153,6 +131,7 @@ var admin = function () {
                 error: function (xhr, status, error)
                 {
                     console.log("Ajax request failed:" + error.toString());
+                    global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.requestFailed);
                 }
             });
         }
@@ -176,7 +155,7 @@ var admin = function () {
 
                     } else
                     {
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-info\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
+                        console.log("setEventToResolved() failed");
                     }
                     if (callback)
                     {
@@ -209,7 +188,7 @@ var admin = function () {
 
                     } else
                     {
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-info\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
+                        console.log("setEventToUnresolved() failed")
                     }
                     if (callback)
                     {
@@ -224,7 +203,6 @@ var admin = function () {
         }
 
         return{
-            logout: logout,
             deleteEvent: deleteEvent,
             getAdminResolvedEventsList: getAdminResolvedEventsList,
             createNewEvent: createNewEvent,
@@ -291,9 +269,7 @@ var admin = function () {
                 var toUnix = to.unix();
                 global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix);
             });
-
         }
-
         return{
             setupEvents: setupEvents
         };
@@ -347,7 +323,6 @@ var admin = function () {
         });
 
         jQuery('#createEventDatepicker').data("DateTimePicker").defaultDate(new Date());
-
         jQuery('#createEventDatepicker').data("DateTimePicker").showTodayButton(true);
 
         if (callback)

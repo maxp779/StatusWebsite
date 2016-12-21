@@ -29,5 +29,6 @@ public enum Request
     getresolvedevents,
     geteventcomments,
     getserverapi,
-    rss
+    rss,
+    getloginstate
 }

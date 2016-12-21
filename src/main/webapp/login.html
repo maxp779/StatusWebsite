@@ -8,7 +8,10 @@
         <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript" crossorigin="anonymous" ></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.4/vue.js"></script>        
         <script src="global.js" type="text/javascript"></script>
+        <script src="vueComponents.js" type="text/javascript"></script>
+        <script src="vueFunctions.js" type="text/javascript"></script>
         <script src="login.js" type="text/javascript"></script>
 
     </head>
@@ -22,18 +25,9 @@
             </div>           
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <ul class="nav nav-pills">
-                                <li role="presentation"><a id="unresolvedEventsNav">Home</a></li>
-                                <li role="presentation"><a id="resolvedEventsNav">Resolved events</a></li>
-                                <li role="presentation" class="active"><a id="adminNav">Admin</a></li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div id="navBar"></div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-sm-12">
                     <div class="panel panel-default">

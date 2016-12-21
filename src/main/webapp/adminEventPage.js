@@ -38,39 +38,43 @@ var adminEventPage = function () {
                 ajaxFunctions.updateEvent(updatedEvent);
             });
 
-            jQuery("#postCommentForm").submit(function (event) {
+            jQuery("#createCommentForm").submit(function (event) {
                 event.preventDefault(); //this prevents the default actions of the form           
-                var formData = jQuery("#postCommentForm").serializeArray();
+                var formData = jQuery("#createCommentForm").serializeArray();
                 var newComment = global.commonFunctions.convertFormArrayToJson(formData);
                 newComment.eventId = global.globalValues.currentEvent.eventId;
 
-                ajaxFunctions.postNewComment(newComment);
+                ajaxFunctions.createNewComment(newComment);
             });
-            
+
             jQuery(document).on("click", ".updateCommentButton", function () {
                 var clickedElement = this;
                 var commentId = clickedElement.dataset.commentId;
-                global.globalValues.currentComment = global.commonFunctions.getComment(commentId);               
+                global.globalValues.currentComment = global.commonFunctions.getComment(commentId);
                 populateUpdateCommentForm(global.globalValues.currentComment);
             });
-            
+
             jQuery(document).on("click", ".deleteCommentButton", function () {
                 var clickedElement = this;
                 var commentId = clickedElement.dataset.commentId;
-                var commentToDelete =  global.commonFunctions.getComment(commentId);    
+                var commentToDelete = global.commonFunctions.getComment(commentId);
                 delete commentToDelete.postTimestamp; //gson on the server has issues parsing this
                 ajaxFunctions.deleteComment(commentToDelete);
             });
-            
+
             jQuery("#updateCommentForm").submit(function (event) {
                 event.preventDefault(); //this prevents the default actions of the form           
                 var formData = jQuery("#updateCommentForm").serializeArray();
                 var formattedFormData = global.commonFunctions.convertFormArrayToJson(formData);
-                var updatedComment =  global.commonFunctions.getComment(global.globalValues.currentComment.commentId);    
+                var updatedComment = global.globalValues.currentComment;
                 updatedComment.commentText = formattedFormData.commentText;
                 delete updatedComment.postTimestamp; //gson on the server has issues parsing this
-                
+
                 ajaxFunctions.updateComment(updatedComment);
+            });
+
+            jQuery(document).on("click", ".backButton", function () {
+                window.history.back();
             });
         };
 
@@ -81,8 +85,9 @@ var adminEventPage = function () {
 
     var ajaxFunctions = function () {
 
-        function postNewComment(comment, callback)
+        function createNewComment(comment, callback)
         {
+            var feedbackElement = document.getElementById("createCommentFeedback");
             jQuery.ajax({
                 url: global.serverApi.requests.addcomment,
                 type: "post",
@@ -91,32 +96,32 @@ var adminEventPage = function () {
                 dataType: "json",
                 success: function (returnObject)
                 {
-                    var feedbackElement = document.getElementById("postCommentFeedback");
                     if (returnObject.success === true)
                     {
                         global.ajaxFunctions.getEventComments(global.globalValues.currentEvent.eventId);
-
+                        document.getElementById("newCommentText").value = "";
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.createCommentSuccess);
                     } else
                     {
-                        //todo give feedback, post comment failed
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.createCommentFailed);
                     }
                     if (callback)
                     {
                         callback();
                     }
-                    setTimeout(function () {
-                        feedbackElement.innerHTML = "";
-                    }, 5000);
                 },
                 error: function (xhr, status, error)
                 {
                     console.log("Ajax request failed:" + error.toString());
+                    global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.requestFailed);
                 }
             });
         }
 
         function updateEvent(event, callback)
         {
+            var feedbackElement = document.getElementById("updateEventFeedback");
+
             jQuery.ajax({
                 url: global.serverApi.requests.updateevent,
                 type: "post",
@@ -125,32 +130,31 @@ var adminEventPage = function () {
                 dataType: "json",
                 success: function (returnObject)
                 {
-                    var feedbackElement = document.getElementById("updateEventFeedback");
                     if (returnObject.success === true)
                     {
                         global.ajaxFunctions.getUnresolvedEvents();
-                        feedbackElement.innerHTML = global.feedbackHtml.updateEventSuccess;
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.updateEventSuccess);
+
                     } else
                     {
-                        feedbackElement.innerHTML = global.feedbackHtml.updateEventFailed;
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.updateEventFailed);
                     }
                     if (callback)
                     {
                         callback();
                     }
-                    setTimeout(function () {
-                        feedbackElement.innerHTML = "";
-                    }, 5000);
                 },
                 error: function (xhr, status, error)
                 {
                     console.log("Ajax request failed:" + error.toString());
+                    global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.requestFailed);
                 }
             });
         }
-        
+
         function updateComment(comment, callback)
         {
+            var feedbackElement = document.getElementById("updateCommentFeedback");
             jQuery.ajax({
                 url: global.serverApi.requests.updatecomment,
                 type: "post",
@@ -162,25 +166,25 @@ var adminEventPage = function () {
                     if (returnObject.success === true)
                     {
                         global.ajaxFunctions.getEventComments(global.globalValues.currentEvent.eventId);
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.updateCommentSuccess);
                     } else
                     {
-                        //todo add feedback
+                        global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.updateCommentFailed);
+
                     }
                     if (callback)
                     {
                         callback();
                     }
-//                    setTimeout(function () {
-//                        feedbackElement.innerHTML = "";
-//                    }, 5000);
                 },
                 error: function (xhr, status, error)
                 {
                     console.log("Ajax request failed:" + error.toString());
+                    global.commonFunctions.setFeedbackElement(feedbackElement, global.feedbackHtml.requestFailed);
                 }
             });
         }
-        
+
         function deleteComment(comment, callback)
         {
             jQuery.ajax({
@@ -196,15 +200,12 @@ var adminEventPage = function () {
                         global.ajaxFunctions.getEventComments(global.globalValues.currentEvent.eventId);
                     } else
                     {
-                        //todo add feedback
+                        console.log("deleteComment() failed");
                     }
                     if (callback)
                     {
                         callback();
                     }
-//                    setTimeout(function () {
-//                        feedbackElement.innerHTML = "";
-//                    }, 5000);
                 },
                 error: function (xhr, status, error)
                 {
@@ -215,10 +216,10 @@ var adminEventPage = function () {
 
 
         return{
-            postNewComment: postNewComment,
-            deleteComment:deleteComment,
+            createNewComment: createNewComment,
+            deleteComment: deleteComment,
             updateEvent: updateEvent,
-            updateComment:updateComment
+            updateComment: updateComment
         };
 
     }();
@@ -244,16 +245,16 @@ var adminEventPage = function () {
             callback();
         }
     }
-    
+
     function populateUpdateCommentForm(comment)
     {
-        document.getElementById("commentText").value = comment.commentText;
+        document.getElementById("currentCommentText").value = comment.commentText;
     }
 
     return{
         ajaxFunctions: ajaxFunctions,
         events: events,
         populateUpdateEventForm: populateUpdateEventForm,
-        populateUpdateCommentForm:populateUpdateCommentForm
+        populateUpdateCommentForm: populateUpdateCommentForm
     };
 }();

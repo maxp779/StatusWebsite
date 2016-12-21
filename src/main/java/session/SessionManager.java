@@ -32,18 +32,27 @@ public class SessionManager
         {
             log.debug("session invalid, session is null");
             sessionValid = false;
-        }else //path for valid session
+        } else //path for valid session
         {
             log.debug("session valid");
             sessionValid = true;
         }
         return sessionValid;
     }
-
+    
+    /**
+     * Invalidates the current session, this is used when the user
+     * logs out
+     * 
+     * @param session 
+     */
     public static void httpSessionRemove(HttpSession session)
     {
         log.trace("httpSessionRemove()");
-        session.invalidate();
+        if (session != null)
+        {
+            session.invalidate();
+        }
     }
 
 }

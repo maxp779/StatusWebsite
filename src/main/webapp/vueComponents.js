@@ -8,7 +8,7 @@ template: `<ul class="list-group spacer">
                 <div class="col-sm-12">
                     <a v-bind:href='serverApi.requests.geteventpage + "?eventId=" + event.eventId' v-bind:data-event-id="event.eventId">
                         <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
-                    </a>       
+                    </a>     
                     <div v-html="eventStatusCodes[event.eventStatus]"></div> 
                     <p class="list-group-item-text">Start time: {{new Date(event.startTimeUnix*1000).toLocaleString()}}</p>
                     <p class="list-group-item-text">Last updated: {{new Date(event.lastUpdatedTimeUnix*1000).toLocaleString()}}</p>
@@ -87,13 +87,15 @@ template: `<ul class="list-group spacer">
         <li v-for="event in adminUnresolvedEventsArray" class="list-group-item" v-bind:key="event.eventId">
             <div class="row">
                 <div class="col-sm-12">
-                    <a v-bind:href='serverApi.requests.getadmineventpage + "?eventId=" + event.eventId' v-bind:data-event-id="event.eventId">
-                        <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
-                    </a>
+                    <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
                     <div v-html="eventStatusCodes[event.eventStatus]"></div>
                     <p class="list-group-item-text">Start time: {{new Date(event.startTimeUnix*1000).toLocaleString()}}</p>
-                    <p class="list-group-item-text">Last updated: {{new Date(event.lastUpdatedTimeUnix*1000).toLocaleString()}}</p>        
+                    <p class="list-group-item-text">Last updated: {{new Date(event.lastUpdatedTimeUnix*1000).toLocaleString()}}</p>
                     <button type="button" class="btn btn-default btn-xs pull-left setResolvedButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-ok" style="color:green"></span> Click to set as resolved</button>
+                    <a role="button" class="btn btn-default btn-xs leftSpacer spacer" v-bind:href='serverApi.requests.getadmineventpage + "?eventId=" + event.eventId'
+                        v-bind:data-event-id="event.eventId">
+                        <span class="glyphicon glyphicon-edit"></span> Edit
+                    </a>
                     <button type="button" class="btn btn-default btn-xs pull-right deleteUnresolvedEventButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
                 </div>
             </div>
@@ -115,12 +117,15 @@ template: `<ul class="list-group spacer">
         <li v-for="event in adminResolvedEventsArray" class="list-group-item" v-bind:key="event.eventId">
             <div class="row">
                 <div class="col-sm-12">
-                    <a v-bind:href='serverApi.requests.getadmineventpage + "?eventId=" + event.eventId' v-bind:data-event-id="event.eventId">
                         <h4 class="list-group-item-heading">{{event.eventTitle}}</h4>
-                    </a>
                     <div v-html="eventStatusCodes[event.eventStatus]"></div> 
                     <p class="list-group-item-text">Time resolved: {{new Date(event.resolvedTimeUnix*1000).toLocaleString()}}</p>
+
                     <button type="button" class="btn btn-default btn-xs pull-left setUnresolvedButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-exclamation-sign" style="color:red"></span> Click to set as unresolved</button>
+                        <a role="button" class="btn btn-default btn-xs leftSpacer spacer" v-bind:href='serverApi.requests.getadmineventpage + "?eventId=" + event.eventId'
+                        v-bind:data-event-id="event.eventId">
+                        <span class="glyphicon glyphicon-edit"></span> Edit
+                    </a>
                     <button type="button" class="btn btn-default btn-xs pull-right deleteResolvedEventButton spacer" v-bind:data-event-id="event.eventId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
                 </div>
             </div>
@@ -147,7 +152,7 @@ template: `<ul class="list-group spacer">
                             </div>
                             <div class="form-group">
                                 <label for="eventText">Description:</label>
-                                <textarea rows="8" cols="50" id="eventText" class="form-control" name="eventText" required></textarea>
+                                <textarea rows="6" cols="50" id="eventText" class="form-control" name="eventText" required></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="eventStatus">Current status:</label>
@@ -169,22 +174,23 @@ template: `<ul class="list-group spacer">
                                     </span>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary spacer">Modify event</button>
-                            <div id="updateEventFeedback"></div>
                         </form>
+                        <button type="submit" form="updateEventForm" class="btn btn-primary spacer">Modify event</button>
+                        <button class="btn btn-primary pull-right spacer backButton">Back to admin panel</button>
+                        <div id="updateEventFeedback"></div>
         </div>
 </div>`});
         var AdminEventComments = Vue.extend({
         template: ` <div class="row">
                 <div class="col-sm-12">
 <ul class="list-group">
-        <form id="postCommentForm">                   
+        <form id="createCommentForm">                   
             <div class="form-group">
-                <label for="commentText">Post new comment:</label>
-                <textarea rows="8" cols="50" id="eventText" class="form-control" name="commentText" required></textarea>
+                <label for="newCommentText">Post new comment:</label>
+                <textarea rows="6" cols="50" id="newCommentText" class="form-control" name="commentText" required></textarea>
             </div>                        
             <button type="submit" class="btn btn-primary spacer">Post</button>
-        <div id="postCommentFeedback"></div>
+        <div id="createCommentFeedback"></div>
         </form>
         
     <h3>Comments:</h3>
@@ -192,9 +198,9 @@ template: `<ul class="list-group spacer">
         <li v-for="comment in eventComments" class="list-group-item" v-bind:key="comment.commentId">
             <div class="row">
                 <div class="col-sm-12">
-                    <p class="list-group-item-text">Posted by: {{comment.userId}}</p>
+                    <p class="list-group-item-text">Posted by: <strong>{{comment.userId}}</strong></p>
                     <p class="list-group-item-text">On: {{new Date(comment.postTimeUnix*1000).toLocaleString()}}</p>
-                    <p class="list-group-item-text spacer">{{comment.commentText}}</p>
+                    <p class="list-group-item-text spacer"><pre>{{comment.commentText}}</pre></p>
 
                     <button type="button" class="btn btn-default btn-xs pull-left updateCommentButton spacer" v-bind:data-comment-id="comment.commentId" data-toggle="modal" data-target="#updateCommentModal"><span class="glyphicon glyphicon-edit"></span> Edit</button>
                     <button type="button" class="btn btn-default btn-xs pull-right deleteCommentButton spacer" v-bind:data-comment-id="comment.commentId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
@@ -228,7 +234,8 @@ template: `<ul class="list-group spacer">
                     <div v-else>
                         <p class="list-group-item-text spacer">Resolved: No</p>
                     </div>
-                    <p class="list-group-item-text spacer">Decription: {{event.eventText}}</p>
+                    <p class="list-group-item-text spacer">Decription: <pre class="spacer">{{event.eventText}}</pre></p>
+                    <button class="btn btn-primary spacer backButton">Back</button>
             </div>
             <div v-else>
                 <h3>Sorry this event appears to have been deleted</h3>    
@@ -236,8 +243,7 @@ template: `<ul class="list-group spacer">
                 </div>
 </div>`});
         var EventComments = Vue.extend({
-        template: `             <div v-if="Object.keys(event).length != 0 && event.constructor === Object">
-
+        template: `<div v-if="Object.keys(event).length != 0 && event.constructor === Object">
 <div class="row">
                 <div class="col-sm-12">        
     <h3>Comments:</h3>
@@ -245,9 +251,9 @@ template: `<ul class="list-group spacer">
         <li v-for="comment in eventComments" class="list-group-item" v-bind:key="comment.commentId">
             <div class="row">
                 <div class="col-sm-12">
-                    <p class="list-group-item-text">Posted by: {{comment.userId}}</p>
+                    <p class="list-group-item-text">Posted by: <strong>{{comment.userId}}</strong></p>
                     <p class="list-group-item-text">On: {{new Date(comment.postTimeUnix*1000).toLocaleString()}}</p>
-                    <p class="list-group-item-text spacer">{{comment.commentText}}</p>
+                    <p class="list-group-item-text spacer"><pre>{{comment.commentText}}</pre></p>
                 </div>
             </div>
         </li>
@@ -265,6 +271,42 @@ template: `<ul class="list-group spacer">
  </div>
  </div>
 </div>`});
+        var NavBar = Vue.extend({
+        template: `<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbar">
+                                    <span class="sr-only">Toggle navigation</span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                    <span class="icon-bar"></span>
+                                </button>
+            <a class="navbar-brand" href="#">
+                <img alt="Brand" height="20" width="20" src="img/logo.png">
+            </a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div v-if="loginState == true">
+                <ul class="nav navbar-nav">
+                    <li role="presentation" id="unresolvedEventsNav"><a v-bind:href="serverApi.requests.getunresolvedeventspage">Home</a></li>
+                    <li role="presentation" id="resolvedEventsNav"><a v-bind:href="serverApi.requests.getresolvedeventspage">Resolved events</a></li>
+                    <li role="presentation" id="adminNav"><a v-bind:href="serverApi.requests.getadminpage">Admin</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li role="presentation"><a v-bind:href="serverApi.requests.logout">Logout</a></li>
+                </ul>
+            </div>
+            <div v-else>
+                <ul class="nav navbar-nav">
+                    <li role="presentation" id="unresolvedEventsNav"><a v-bind:href="serverApi.requests.getunresolvedeventspage">Home</a></li>
+                    <li role="presentation" id="resolvedEventsNav"><a v-bind:href="serverApi.requests.getresolvedeventspage">Resolved events</a></li>
+                    <li role="presentation" id="loginNav"><a v-bind:href="serverApi.requests.getloginpage">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>`});
         //not a vue component
         var eventStatusCodes = {
         0: "<p class='list-group-item-text operational'>Status: Operational</p>",
@@ -284,6 +326,7 @@ template: `<ul class="list-group spacer">
                 AdminEventComments:AdminEventComments,
                 Event:Event,
                 EventComments:EventComments,
+                NavBar:NavBar,
                 eventStatusCodes:eventStatusCodes
         };
-}();
+        }();

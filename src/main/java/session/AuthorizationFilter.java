@@ -20,12 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class intercepts every request to the server and ascertains if the request
- * needs authorization or not.
- * 
- * This class came with a lot of default code I dont want to touch in case it breaks
- * things.
- * 
+ * This class intercepts every request to the server and ascertains if the
+ * request needs authorization or not.
+ *
+ * This class came with a lot of default code I dont want to touch in case it
+ * breaks things.
+ *
  * @author max
  */
 @WebFilter(filterName = "AuthorizationFilter", urlPatterns =
@@ -49,7 +49,7 @@ public class AuthorizationFilter implements Filter
 
     /**
      * This method does the actual filtering.
-     * 
+     *
      * @param request The servlet request we are processing
      * @param response The servlet response we are creating
      * @param chain The filter chain we are processing
@@ -69,25 +69,30 @@ public class AuthorizationFilter implements Filter
         ServletContext sc = getFilterConfig().getServletContext();
         boolean sessionValid;
 
-        if (this.needsAuthentication(currentURL))
+        if (!this.needsAuthentication(currentURL)) //if request does not need authentication, pass it on
+        {
+            chain.doFilter(request, response);
+        } else
         {
             sessionValid = SessionManager.sessionValidate((HttpServletRequest) request);
-            if (sessionValid)//if valid session pass on request
+            if (sessionValid)
             {
-                chain.doFilter(request, response);
-            } else//if invalid session, back to login page
+                if (currentURL.contains("/login.html") || currentURL.contains("/getloginpage")) //if valid session and request is for login page
+                {
+                    aResponse.sendRedirect(sc.getContextPath() + "/" + GlobalValues.getADMIN_PAGE_URL()); //redirect to admin page
+                } else
+                {
+                    chain.doFilter(request, response);
+                }
+            } else//if invalid session, redirect to login page
             {
                 aResponse.sendRedirect(sc.getContextPath() + "/" + GlobalValues.getLOGIN_PAGE_REQUEST());
             }
-        } else //request dosent need auth so can be ignored
-        {
-            chain.doFilter(request, response);
         }
     }
 
     /**
-     * This method contains a list of all resources that require
-     * authentication
+     * This method contains a list of all resources that require authentication
      *
      * @param url
      * @return if auth is required true is returned, false if it is not required
@@ -100,11 +105,11 @@ public class AuthorizationFilter implements Filter
         {
             if (url.contains(authRequest))
             {
-                log.debug("auth required for: "+url);
+                log.debug("auth required for: " + url);
                 return true;
             }
         }
-        log.debug("auth not required for: "+url);
+        log.debug("auth not required for: " + url);
         return false;
     }
 

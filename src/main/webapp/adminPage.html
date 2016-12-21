@@ -28,28 +28,9 @@
                     <h3>Admin panel</h3>
                 </div>
             </div>
-                        <div class="row">
-                <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <ul class="nav nav-pills">
-                                <li role="presentation"><a id="unresolvedEventsNav">Home</a></li>
-                                <li role="presentation"><a id="resolvedEventsNav">Resolved events</a></li>
-                                <li role="presentation" class="active"><a id="adminNav">Admin</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <p>Welcome to the admin page, you are logged in!</p>
-                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createEventModal">Create Event</button>
-                            <button id="logoutButton" type="button" class="btn btn-primary btn-sm pull-right">Logout</button>
-                        </div>
-                    </div>
+                    <div id="navBar"></div>
                 </div>
             </div>
             <div class="row">
@@ -57,7 +38,16 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <h3>Scheduled/Active events:</h3>
-                            <div id="adminUnresolvedEvents"></div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#createEventModal">Create Event</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="adminUnresolvedEvents"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -92,7 +82,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="eventText">Description:</label>
-                                <textarea rows="8" cols="50" id="eventText" class="form-control" name="eventText" required></textarea>
+                                <textarea rows="6" cols="50" id="eventText" class="form-control" name="eventText" required></textarea>
                             </div>
 
                             <div class="form-group">
@@ -117,6 +107,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary spacer">Submit new event</button>
+                            <div id="createNewEventFeedback"></div>
                         </form>
                     </div>
                     <div class="modal-footer">

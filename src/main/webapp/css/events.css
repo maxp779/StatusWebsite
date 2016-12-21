@@ -8,7 +8,7 @@
 }
 .minorDisruption
 {
-    color: #efd932;
+    color: #f4d442;
 }
 .moderateDisruption
 {
@@ -45,4 +45,9 @@
 
 textarea{
     resize: vertical;
+}
+
+.leftSpacer
+{
+  margin-left:10px;
 }

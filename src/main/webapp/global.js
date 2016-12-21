@@ -1,33 +1,54 @@
-//jQuery(document).ready(function () {
-//    var rssUrl = "/rss";
-//    jQuery('head').append("<link rel='alternate' type='application/rss+xml' title='Status Website RSS feed' href=" + rssUrl + "/>");
-//});
-
-
 var global = function () {
 
     var feedbackHtml = function () {
-
+        var createEventSuccess = "<span class='label label-success'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span> Create event success</span>";
+        var createEventFailed = "<span class='label label-danger'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Create event failed</span>";
         var updateEventSuccess = "<span class='label label-success'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span> Event update success</span>";
         var updateEventFailed = "<span class='label label-danger'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Event update failed</span>";
+        var createCommentSuccess = "<span class='label label-success'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span> Post comment success</span>";
+        var createCommentFailed = "<span class='label label-danger'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Post comment failed</span>";
+        var updateCommentSuccess = "<span class='label label-success'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span> Edit comment success</span>";
+        var updateCommentFailed = "<span class='label label-danger'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Edit comment failed</span>";
+        var ajaxRequestFailed = "<span class='label label-danger'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Request failed</span>";
 
         return{
+            createEventSuccess: createEventSuccess,
+            createEventFailed: createEventFailed,
             updateEventSuccess: updateEventSuccess,
-            updateEventFailed: updateEventFailed
+            updateEventFailed: updateEventFailed,
+            createCommentSuccess: createCommentSuccess,
+            createCommentFailed: createCommentFailed,
+            updateCommentSuccess: updateCommentSuccess,
+            updateCommentFailed: updateCommentFailed,
+            ajaxRequestFailed: ajaxRequestFailed
         };
     }();
 
     var commonFunctions = function () {
+
+        function setFeedbackElement(htmlElement, htmlContent, displayTime = 5000, callback)
+        {
+            htmlElement.innerHTML = htmlContent;
+            
+            setTimeout(function () {
+                htmlElement.innerHTML = "";
+            }, displayTime);
+            
+            if (callback)
+            {
+                callback();
+            }
+        }
 
         function setupRssFeed()
         {
             //put rss link at top
             var rssRequestUrl = global.serverApi.requests.rss;
             jQuery('head').append("<link rel='alternate' type='application/rss+xml' title='Status Website RSS feed' href=" + rssRequestUrl + "/>");
-            
+
             //put clickable icon on page
             var rssLinkElement = document.getElementById("rssLink");
-            if(!isUndefinedOrNull(rssLinkElement))
+            if (!isUndefinedOrNull(rssLinkElement))
             {
                 rssLinkElement.innerHTML = "<a href=" + rssRequestUrl + "><img src='/img/rss.png' style='width:20px;height:20px;'></a>";
             }
@@ -52,7 +73,7 @@ var global = function () {
             {
                 if (globalValues.currentEventCommentsArray[property].commentId === commentId)
                 {
-                    return globalValues.currentEventCommentsArray[property];
+                    return jQuery.extend(true, {}, globalValues.currentEventCommentsArray[property]);
                 }
             }
         }
@@ -108,13 +129,6 @@ var global = function () {
             return output;
         }
 
-        function setupNavBar()
-        {
-            document.getElementById("unresolvedEventsNav").href = global.serverApi.requests.getunresolvedeventspage;
-            document.getElementById("resolvedEventsNav").href = global.serverApi.requests.getresolvedeventspage;
-            document.getElementById("adminNav").href = global.serverApi.requests.getloginpage;
-        }
-
         /**
          * This method updates the globalValues local storage object with the latest values
          * from the server
@@ -133,12 +147,12 @@ var global = function () {
         return{
             isUndefinedOrNull: isUndefinedOrNull,
             updateArrayObjects: updateArrayObjects,
-            setupNavBar: setupNavBar,
             setupRssFeed: setupRssFeed,
             setGlobalValuesLocalStorage: setGlobalValuesLocalStorage,
             getComment: getComment,
             convertFormArrayToJson: convertFormArrayToJson,
-            getQueryVariable: getQueryVariable
+            getQueryVariable: getQueryVariable,
+            setFeedbackElement: setFeedbackElement
         };
     }();
 
@@ -149,13 +163,15 @@ var global = function () {
         var currentEventCommentsArray = [];
         var currentEvent = {}; //if an individual event is being viewed it is stored here
         var currentComment = {}; //for storing the current comment being editted
+        var loginState = false;
 
         return {
             unresolvedEventsArray: unresolvedEventsArray,
             resolvedEventsArray: resolvedEventsArray,
             currentEventCommentsArray: currentEventCommentsArray,
             currentEvent: currentEvent,
-            currentComment: currentComment
+            currentComment: currentComment,
+            loginState: loginState
         };
     }();
 
@@ -176,7 +192,7 @@ var global = function () {
 
         function setResolvedEventsArray(newArray, callback) {
 
-            //sort by resolved time time in descending order           
+            //sort by resolved time in descending order           
             newArray.sort(function (first, second) {
                 return second.resolvedTimeUnix - first.resolvedTimeUnix;
 
@@ -229,6 +245,34 @@ var global = function () {
 
     var ajaxFunctions = function () {
 
+        function getLoginState(callback)
+        {
+            jQuery.ajax({
+                url: global.serverApi.requests.getloginstate,
+                type: "get",
+                dataType: "json",
+                success: function (returnObject)
+                {
+                    if (returnObject.success === true)
+                    {
+                        globalValues.loginState = returnObject.data;
+                    } else
+                    {
+                        console.log("getLoginState() failed");
+                    }
+
+                    if (callback)
+                    {
+                        callback();
+                    }
+                },
+                error: function (xhr, status, error)
+                {
+                    console.log("Ajax request failed:" + error.toString());
+                }
+            });
+        }
+
         function getEvent(eventId, callback)
         {
             var toServer = {};
@@ -247,7 +291,7 @@ var global = function () {
                         globalValues.currentEvent = returnObject.data;
                     } else
                     {
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
+                        console.log("getEvent() failed");
                     }
 
                     if (callback)
@@ -308,7 +352,6 @@ var global = function () {
                     } else
                     {
                         global.setGlobalValues.setUnresolvedEventsArray([]);
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
                     }
 
                     if (callback)
@@ -327,7 +370,7 @@ var global = function () {
         function getServerApi(callback)
         {
             console.log("getServerApi()");
-            var storedApi = JSON.parse(localStorage.getItem("serverApi"));
+            var storedApi = JSON.parse(localStorage.getItem("statusWebsiteServerApi"));
             if (!commonFunctions.isUndefinedOrNull(storedApi)) //if serverApi is in localStorage
             {
                 global.serverApi = storedApi;
@@ -346,14 +389,14 @@ var global = function () {
                         if (returnObject.success === true)
                         {
                             global.serverApi = returnObject.data;
-                            localStorage.setItem("serverApi", JSON.stringify(returnObject.data));
+                            localStorage.setItem("statusWebsiteServerApi", JSON.stringify(returnObject.data));
                             if (callback)
                             {
                                 callback();
                             }
                         } else
                         {
-                            console.log("Error: Failed to fetch API from server, server may be down");
+                            console.log("getServerApi() failed, server may be down");
                         }
                     },
                     error: function (xhr, status, error)
@@ -371,7 +414,6 @@ var global = function () {
             toServer.to = to;
 
             document.getElementById("getEventsButton").innerHTML = "<span class='glyphicon glyphicon-refresh spinning'></span> Loading...";
-            //setTimeout(function(){document.getElementById("getEventsButton").innerHTML = "Get events";}, 1000);    
             jQuery.ajax({
                 url: global.serverApi.requests.getresolvedevents,
                 type: "get",
@@ -389,7 +431,6 @@ var global = function () {
                     } else
                     {
                         global.setGlobalValues.setResolvedEventsArray([]);
-                        //document.getElementById("feedback").innerHTML = "<div class=\"alert alert-info\" role=\"alert\">" + global.serverApi.errorCodes[returnObject.errorCode] + " please try again</div>";
                     }
                     if (callback)
                     {
@@ -408,7 +449,8 @@ var global = function () {
             getUnresolvedEvents: getUnresolvedEvents,
             getResolvedEventsBetweenDates: getResolvedEventsBetweenDates,
             getEventComments: getEventComments,
-            getEvent: getEvent
+            getEvent: getEvent,
+            getLoginState: getLoginState
         };
     }();
 

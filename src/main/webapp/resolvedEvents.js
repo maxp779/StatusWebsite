@@ -1,7 +1,10 @@
 jQuery(document).ready(function () {
     global.ajaxFunctions.getServerApi(function () {
-        global.commonFunctions.setupNavBar();
-        global.commonFunctions.setupRssFeed();
+        global.ajaxFunctions.getLoginState(function () {
+            vueFunctions.loadNavBarComponent(function () {
+                jQuery("#resolvedEventsNav").addClass("active");
+            });
+        });
         vueFunctions.loadDatepickers(function () {
             resolvedEvents.setupDatepickers(function () {
 
@@ -9,9 +12,9 @@ jQuery(document).ready(function () {
                 var to = jQuery('#datepicker2').data("DateTimePicker").date();
                 var fromUnix = from.unix(); //UTC unix
                 var toUnix = to.unix();
-
                 global.ajaxFunctions.getResolvedEventsBetweenDates(fromUnix, toUnix, function () {
                     vueFunctions.loadResolvedEventsComponent();
+                    global.commonFunctions.setupRssFeed();
                     resolvedEvents.setupEvents();
                 });
             });
@@ -58,18 +61,18 @@ var resolvedEvents = function () {
             jQuery('#datepicker1').data("DateTimePicker").maxDate(e.date);
         });
 
-        
+
         //from one month in the past
         var oneMonthAgo = new Date();
         oneMonthAgo.setMonth((new Date().getMonth() - 1));
         jQuery('#datepicker1').data("DateTimePicker").defaultDate(oneMonthAgo);
         jQuery('#datepicker1').data("DateTimePicker").viewDate(oneMonthAgo);
-        
+
         //to the end of today on the current date
         var endOfDay = new Date();
-        endOfDay.setHours(23,59,59,999);
+        endOfDay.setHours(23, 59, 59, 999);
         jQuery('#datepicker2').data("DateTimePicker").defaultDate(endOfDay);
-        
+
 
         jQuery('#datepicker1').data("DateTimePicker").showTodayButton(true);
         jQuery('#datepicker2').data("DateTimePicker").showTodayButton(true);

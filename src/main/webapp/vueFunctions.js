@@ -1,5 +1,26 @@
 var vueFunctions = function () {
     
+    function loadNavBarComponent(callback)
+    {
+        // create an instance
+        var navBar = {};
+        
+        var navBar = new vueComponents.NavBar({
+            replace: false,
+            data: {
+                serverApi: global.serverApi,
+                loginState: global.globalValues.loginState
+            }
+        });
+        // mount it on an element
+        navBar.$mount('#navBar');
+
+        if (callback)
+        {
+            callback();
+        }
+    }
+    
     function loadEventComponents(callback)
     {
         // create an instance
@@ -152,7 +173,8 @@ var vueFunctions = function () {
         loadDatepickers: loadDatepickers,
         loadMainAdminComponent: loadMainAdminComponent,
         loadAdminEventComponents:loadAdminEventComponents,
-        loadEventComponents:loadEventComponents
+        loadEventComponents:loadEventComponents,
+        loadNavBarComponent:loadNavBarComponent
     };
 }();
 
