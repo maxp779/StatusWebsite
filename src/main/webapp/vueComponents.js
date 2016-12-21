@@ -200,10 +200,11 @@ template: `<ul class="list-group spacer">
                 <div class="col-sm-12">
                     <p class="list-group-item-text">Posted by: <strong>{{comment.userId}}</strong></p>
                     <p class="list-group-item-text">On: {{new Date(comment.postTimeUnix*1000).toLocaleString()}}</p>
-                    <p class="list-group-item-text spacer"><pre>{{comment.commentText}}</pre></p>
-
-                    <button type="button" class="btn btn-default btn-xs pull-left updateCommentButton spacer" v-bind:data-comment-id="comment.commentId" data-toggle="modal" data-target="#updateCommentModal"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-                    <button type="button" class="btn btn-default btn-xs pull-right deleteCommentButton spacer" v-bind:data-comment-id="comment.commentId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
+                    <div class="well well-sm spacer">
+                        <p class="list-group-item-text">{{comment.commentText}}</p>
+                    </div>
+                    <button type="button" class="btn btn-default btn-xs pull-left updateCommentButton" v-bind:data-comment-id="comment.commentId" data-toggle="modal" data-target="#updateCommentModal"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+                    <button type="button" class="btn btn-default btn-xs pull-right deleteCommentButton" v-bind:data-comment-id="comment.commentId"><span class="glyphicon glyphicon-minus" style="color:red"></span> Delete</button>
                 </div>
             </div>
         </li>
@@ -234,7 +235,10 @@ template: `<ul class="list-group spacer">
                     <div v-else>
                         <p class="list-group-item-text spacer">Resolved: No</p>
                     </div>
-                    <p class="list-group-item-text spacer">Decription: <pre class="spacer">{{event.eventText}}</pre></p>
+                    <p class="list-group-item-text spacer">Description:</p>
+                    <div class="well well-sm spacer">
+                        <p class="list-group-item-text">{{event.eventText}}</p>
+                    </div>
                     <button class="btn btn-primary spacer backButton">Back</button>
             </div>
             <div v-else>
@@ -253,7 +257,9 @@ template: `<ul class="list-group spacer">
                 <div class="col-sm-12">
                     <p class="list-group-item-text">Posted by: <strong>{{comment.userId}}</strong></p>
                     <p class="list-group-item-text">On: {{new Date(comment.postTimeUnix*1000).toLocaleString()}}</p>
-                    <p class="list-group-item-text spacer"><pre>{{comment.commentText}}</pre></p>
+                <div class="well well-sm spacer">
+                    <p class="list-group-item-text">{{comment.commentText}}</p>
+                </div>
                 </div>
             </div>
         </li>
